@@ -91,7 +91,7 @@ export default function Home() {
   }
 
   return (
-    <Layout className="home-page">
+    <Layout className="page-layout">
       <Header className="header">
         <div className="left">
           <div className="logo"></div>

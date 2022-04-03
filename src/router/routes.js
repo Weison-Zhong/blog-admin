@@ -50,9 +50,23 @@ const routes = [
     icon: <SettingOutlined />,
     children: [
       {
-        name: "新增文章",
-        key: "article/add",
-        componentPath: "article-manage",
+        name: "编辑文章",
+        key: "article/edit",
+        componentPath: "article-edit",
+        icon: <UserOutlined />,
+        keepAlive: false,
+      },
+    ],
+  },
+  {
+    name: "菜单管理",
+    key: "menu",
+    icon: <SettingOutlined />,
+    children: [
+      {
+        name: "编辑菜单",
+        key: "menu/edit",
+        componentPath: "menu-edit",
         icon: <UserOutlined />,
         keepAlive: false,
       },
