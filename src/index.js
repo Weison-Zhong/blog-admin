@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
+import "./index.less";
 import "antd/dist/antd.min.css";
 import zhCN from "antd/lib/locale/zh_CN";
 import { Router, Switch, Route } from "react-router-dom";
