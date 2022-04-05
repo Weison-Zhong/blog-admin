@@ -110,3 +110,11 @@ export async function addArticleApi(data) {
     },
   });
 }
+//获取菜单列表
+//查询文章类型列表
+export async function getMenusApi() {
+  return request({
+    url: "/api/GetMenus",
+    method: "get",
+  });
+}

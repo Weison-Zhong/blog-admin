@@ -64,9 +64,9 @@ const routes = [
     icon: <SettingOutlined />,
     children: [
       {
-        name: "编辑菜单",
-        key: "menu/edit",
-        componentPath: "menu-edit",
+        name: "菜单列表",
+        key: "menu/list",
+        componentPath: "menu-list",
         icon: <UserOutlined />,
         keepAlive: false,
       },
