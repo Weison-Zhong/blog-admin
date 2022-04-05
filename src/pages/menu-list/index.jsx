@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import { getMenusApi } from "@/axios/api";
-import { Table } from "antd";
+import { Table, Switch, Space } from "antd";
 
 const columns = [
   { title: "名称", dataIndex: "name", key: "name" },
@@ -14,37 +14,45 @@ const columns = [
     render: () => <a>Delete</a>,
   },
 ];
-export default class MenuList extends Component {
-  constructor() {
-    super();
-    this.state = {
-      menus: [],
-    };
-  }
-  async fetchMenus() {
+
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(
+      `selectedRowKeys: ${selectedRowKeys}`,
+      "selectedRows: ",
+      selectedRows
+    );
+  },
+  onSelect: (record, selected, selectedRows) => {
+    console.log(record, selected, selectedRows);
+  },
+  onSelectAll: (selected, selectedRows, changeRows) => {
+    console.log(selected, selectedRows, changeRows);
+  },
+};
+export default function MenuList() {
+  const [checkStrictly, setCheckStrictly] = useState(false);
+  const [menus, setMenus] = useState([]);
+  const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
-    console.log({res});
+    console.log({ res });
     if (code !== 200) return;
-    this.setState({
-      menus: data,
-    });
-  }
-  componentDidMount() {
-    this.fetchMenus();
-  }
-  render() {
-    return (
+    setMenus(data);
+  };
+  useEffect(() => {
+    fetchMenus();
+  }, []);
+  return (
+    <>
+      <Space align="center" style={{ marginBottom: 16 }}>
+        <Switch checked={checkStrictly} onChange={setCheckStrictly} />
+      </Space>
       <Table
         columns={columns}
-        expandable={{
-          expandedRowRender: (record) => (
-            <p style={{ margin: 0 }}>{record.description}</p>
-          ),
-          rowExpandable: (record) => record.name !== "Not Expandable",
-        }}
-        dataSource={this.state.menus}
+        rowSelection={{ ...rowSelection, checkStrictly }}
+        dataSource={menus}
       />
-    );
-  }
+    </>
+  );
 }
