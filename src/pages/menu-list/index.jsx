@@ -37,7 +37,7 @@ export default function MenuList() {
     {
       title: "操作",
       key: "operation",
-      width: 130,
+      width: 150,
       align: "center",
       render: (row) => {
         return (
@@ -51,15 +51,15 @@ export default function MenuList() {
               type="primary"
               icon={<FormOutlined />}
               onClick={() => handleUpdateMenuClick(row)}
+              style={{
+                display: "inline-block",
+                margin: "0 8px",
+              }}
             />
             <Button
               type="primary"
               danger
               icon={<DeleteOutlined />}
-              style={{
-                display: "inline-block",
-                marginLeft: "10px",
-              }}
               onClick={() => handleDeleteMenuClick(row)}
             />
           </div>
@@ -69,6 +69,8 @@ export default function MenuList() {
   ];
   const handleAddSecondMenuClick = (row) => {
     console.log({ row });
+    setUpdatingMenu({ parentMenuId: row.id });
+    setIsShowModal(true);
   };
   const handleUpdateMenuClick = (row) => {
     setUpdatingMenu(row);
@@ -103,7 +105,7 @@ export default function MenuList() {
         setIsShowModal={setIsShowModal}
         formConfig={formConfig}
         width={500}
-        title={"一级菜单"}
+        title={updatingMenu.parentMenuId ? "二级菜单" : "一级菜单"}
         updatingObj={updatingMenu}
         setUpdatingObj={setUpdatingMenu}
         submitBtnCallBack={addOrUpdateMenuApi}
@@ -125,13 +127,6 @@ export default function MenuList() {
           <Input allowClear={true} />
         </Item>
         <Item name="keepAlive" label="是否缓存" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        <Item
-          name="parentMenuId"
-          label="父级菜单"
-          rules={[{ required: false }]}
-        >
           <Input allowClear={true} />
         </Item>
       </FormModal>
