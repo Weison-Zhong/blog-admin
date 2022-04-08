@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { getMenusApi } from "@/axios/api";
+import { getMenusApi, addOrUpdateMenuApi } from "@/axios/api";
 import { Table, Button, Form, Input } from "antd";
-import { PlusCircleOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  PlusCircleOutlined,
+  FormOutlined,
+  PlusSquareOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import FormModal from "@/components/FormModal";
 const { Item } = Form;
-const columns = [
-  { title: "名称", dataIndex: "name", key: "name" },
-  { title: "图标", dataIndex: "icon", key: "icon" },
-  { title: "路径", dataIndex: "key", key: "key" },
-  { title: "组件目录", dataIndex: "componentPath", key: "componentPath" },
-  {
-    title: "操作",
-    dataIndex: "",
-    key: "x",
-    render: () => <a>Delete</a>,
-  },
-];
+
 let form = null;
 const formConfig = {
   layout: {
@@ -34,7 +28,53 @@ export default function MenuList() {
   form = Form.useForm()[0];
   const [menus, setMenus] = useState([]);
   const [isShowModal, setIsShowModal] = useState(false);
-
+  const [updatingMenu, setUpdatingMenu] = useState({});
+  const columns = [
+    { title: "名称", dataIndex: "name", key: "name" },
+    { title: "图标", dataIndex: "icon", key: "icon" },
+    { title: "路径", dataIndex: "key", key: "key" },
+    { title: "组件目录", dataIndex: "componentPath", key: "componentPath" },
+    {
+      title: "操作",
+      key: "operation",
+      width: 130,
+      align: "center",
+      render: (row) => {
+        return (
+          <div>
+            <Button
+              type="primary"
+              icon={<PlusSquareOutlined />}
+              onClick={() => handleAddSecondMenuClick(row)}
+            />
+            <Button
+              type="primary"
+              icon={<FormOutlined />}
+              onClick={() => handleUpdateMenuClick(row)}
+            />
+            <Button
+              type="primary"
+              danger
+              icon={<DeleteOutlined />}
+              style={{
+                display: "inline-block",
+                marginLeft: "10px",
+              }}
+              onClick={() => handleDeleteMenuClick(row)}
+            />
+          </div>
+        );
+      },
+    },
+  ];
+  const handleAddSecondMenuClick = (row) => {
+    console.log({ row });
+  };
+  const handleUpdateMenuClick = (row) => {
+    setUpdatingMenu(row);
+    setIsShowModal(true);
+  };
+  const handleDeleteMenuClick = () => {};
   const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
@@ -45,6 +85,7 @@ export default function MenuList() {
   useEffect(() => {
     fetchMenus();
   }, []);
+
   return (
     <>
       <Button
@@ -62,13 +103,36 @@ export default function MenuList() {
         setIsShowModal={setIsShowModal}
         formConfig={formConfig}
         width={500}
-        
+        title={"一级菜单"}
+        updatingObj={updatingMenu}
+        setUpdatingObj={setUpdatingMenu}
+        submitBtnCallBack={addOrUpdateMenuApi}
       >
-        <Item name="name" label="用户名" rules={[{ required: true }]}>
+        <Item name="name" label="菜单名" rules={[{ required: true }]}>
           <Input allowClear={true} />
         </Item>
-        <Item name="password" label="密码">
-          <Input.Password allowClear={true} />
+        <Item name="key" label="路径" rules={[{ required: true }]}>
+          <Input allowClear={true} />
+        </Item>
+        <Item
+          name="componentPath"
+          label="组件目录"
+          rules={[{ required: true }]}
+        >
+          <Input allowClear={true} />
+        </Item>
+        <Item name="icon" label="图标" rules={[{ required: true }]}>
+          <Input allowClear={true} />
+        </Item>
+        <Item name="keepAlive" label="是否缓存" rules={[{ required: true }]}>
+          <Input allowClear={true} />
+        </Item>
+        <Item
+          name="parentMenuId"
+          label="父级菜单"
+          rules={[{ required: false }]}
+        >
+          <Input allowClear={true} />
         </Item>
       </FormModal>
     </>

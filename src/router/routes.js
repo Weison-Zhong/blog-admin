@@ -42,6 +42,13 @@ const routes = [
         icon: <KeyOutlined />,
         keepAlive: false,
       },
+      {
+        name: "Api列表",
+        key: "system/api",
+        componentPath: "api-list",
+        icon: <KeyOutlined />,
+        keepAlive: false,
+      },
     ],
   },
   {

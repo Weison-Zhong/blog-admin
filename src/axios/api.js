@@ -63,31 +63,31 @@ export async function addAdministratorApi(data) {
   });
 }
 //查询api列表
-export async function getPermissionsApi() {
+export async function getApisApi() {
   return request({
-    url: "/api/GetPermissions",
+    url: "/api/GetApis",
     method: "get",
   });
 }
-//新增权限
-export async function addPermissionApi(data) {
+//新增Api
+export async function addApiApi(data) {
   return request({
-    url: "/api/AddPermission",
+    url: "/api/AddApi",
     method: "post",
     data,
   });
 }
-//删除权限
-export async function deletePermissionApi(permissionId) {
+//删除Api
+export async function deleteApiApi(apiId) {
   return request({
-    url: `/api/DeletePermission/${permissionId}`,
+    url: `/api/DeleteApi/${apiId}`,
     method: "delete",
   });
 }
-//修改权限
-export async function updatePermissionApi(data) {
+//修改Api
+export async function updateApiApi(data) {
   return request({
-    url: `/api/UpdatePermission/${data.id}`,
+    url: `/api/UpdateApi/${data.id}`,
     method: "put",
     data,
   });
@@ -117,4 +117,20 @@ export async function getMenusApi() {
     url: "/api/GetMenus",
     method: "get",
   });
+}
+export async function addOrUpdateMenuApi(data) {
+  const { id } = data || {};
+  if (id) {
+    return request({
+      url: `/api/UpdateMenu/${id}`,
+      method: "put",
+      data,
+    });
+  } else {
+    return request({
+      url: "/api/AddMenu",
+      method: "post",
+      data,
+    });
+  }
 }
