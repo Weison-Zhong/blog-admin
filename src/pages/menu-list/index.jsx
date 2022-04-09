@@ -93,7 +93,9 @@ export default function MenuList() {
   useEffect(() => {
     fetchMenus();
   }, []);
-
+  const testcb = (a) => {
+    console.log({ a });
+  };
   return (
     <>
       <Button
@@ -114,7 +116,8 @@ export default function MenuList() {
         title={updatingMenu.parentMenuId ? "二级菜单" : "一级菜单"}
         updatingObj={updatingMenu}
         setUpdatingObj={setUpdatingMenu}
-        submitBtnCallBack={addOrUpdateMenuApi}
+        submitBtnCallBack={testcb}
+        
       >
         <Item name="name" label="菜单名" rules={[{ required: true }]}>
           <Input allowClear={true} />

@@ -29,16 +29,6 @@ export default function FormModal(props) {
   const handleCancel = () => {
     setIsShowModal(false);
   };
-  //新增或修改
-  const handleOnFinish = async (data) => {
-    setIsSubmitting(true);
-    const { id } = updatingObj || {};
-    if (id) {
-      data.id = id;
-    }
-    await submitBtnCallBack(data);
-    setIsSubmitting(false);
-  };
   useEffect(() => {
     setTimeout(() => {
       formRef.current && formRef.current.setFieldsValue(updatingObj);
@@ -53,7 +43,15 @@ export default function FormModal(props) {
       onCancel={handleCancel}
       width={width}
     >
-      <Form {...layout} form={form} ref={formRef} onFinish={handleOnFinish}>
+      <Form
+        {...layout}
+        form={form}
+        ref={formRef}
+        // onFinish={(data) => {
+        //   submitBtnCallBack(data);
+        // }}
+        onFinish={submitBtnCallBack}
+      >
         {children}
         <Item {...tailLayout}>
           <Button
