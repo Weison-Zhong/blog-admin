@@ -134,3 +134,11 @@ export async function addOrUpdateMenuApi(data) {
     });
   }
 }
+//删除单个菜单
+//删除Api
+export async function deleteMenuApi(id) {
+  return request({
+    url: `/api/DeleteMenu/${id}`,
+    method: "delete",
+  });
+}

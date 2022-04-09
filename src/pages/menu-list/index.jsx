@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getMenusApi, addOrUpdateMenuApi } from "@/axios/api";
-import { Table, Button, Form, Input } from "antd";
+import { getMenusApi, addOrUpdateMenuApi, deleteMenuApi } from "@/axios/api";
+import { Table, Button, Form, Input, Modal } from "antd";
 import {
   PlusCircleOutlined,
   FormOutlined,
@@ -8,6 +8,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import FormModal from "@/components/FormModal";
+import DeleteModal from "@/components/DeleteModal";
 const { Item } = Form;
 
 let form = null;
@@ -28,6 +29,8 @@ export default function MenuList() {
   form = Form.useForm()[0];
   const [menus, setMenus] = useState([]);
   const [isShowModal, setIsShowModal] = useState(false);
+  const [deletingMenu, setDeletingMenu] = useState({});
+  const [isDeletingMenu, setIsDeletingMenu] = useState(false);
   const [updatingMenu, setUpdatingMenu] = useState({});
   const columns = [
     { title: "名称", dataIndex: "name", key: "name" },
@@ -76,7 +79,10 @@ export default function MenuList() {
     setUpdatingMenu(row);
     setIsShowModal(true);
   };
-  const handleDeleteMenuClick = () => {};
+  const handleDeleteMenu = () => {};
+  const handleDeleteMenuClick = async (row) => {
+    setDeletingMenu(row);
+  };
   const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
@@ -130,6 +136,11 @@ export default function MenuList() {
           <Input allowClear={true} />
         </Item>
       </FormModal>
+      <DeleteModal
+        deletingObj={deletingMenu}
+        setDeletingObj={setDeletingMenu}
+        deleteApi={deleteMenuApi}
+      />
     </>
   );
 }

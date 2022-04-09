@@ -93,14 +93,14 @@ export default function PermissionManage() {
                 display: "inline-block",
                 marginLeft: "10px",
               }}
-              onClick={() => handleDeleteRoleClick(row)}
+              onClick={() => handleDeleteApiClick(row)}
             />
           </div>
         );
       },
     },
   ];
-  function handleDeleteRoleClick(row) {
+  function handleDeleteApiClick(row) {
     setDeletingRole(row);
   }
   async function fetchPermissions() {
@@ -246,7 +246,7 @@ export default function PermissionManage() {
         </Form>
       </Modal>
       <Modal
-        visible={deletingPermission.id ? true : false}
+        visible={deletingPermission.id}
         confirmLoading={isDeletingPermission}
         closable={false}
         onOk={() => handleDeletePermission()}
