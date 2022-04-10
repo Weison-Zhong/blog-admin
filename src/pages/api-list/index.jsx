@@ -62,27 +62,10 @@ export default function ApiList() {
       width: 200,
       dataIndex: "createdDate",
       align: "center",
-      // render: (row) => {
-      //   return (
-      //     <div>
-      //       <Button
-      //         type="primary"
-      //         icon={<FormOutlined />}
-      //         onClick={() => handleEditApiClick(row)}
-      //       />
-      //       <Button
-      //         type="primary"
-      //         danger
-      //         icon={<DeleteOutlined />}
-      //         style={{
-      //           display: "inline-block",
-      //           marginLeft: "10px",
-      //         }}
-      //         onClick={() => handleDeleteApiClick(row)}
-      //       />
-      //     </div>
-      //   );
-      // },
+      render: (_, row) => {
+        const { menuName } = row.menu || {};
+        return menuName;
+      },
     },
     {
       title: "说明",
@@ -207,6 +190,7 @@ export default function ApiList() {
         updatingObj={updatingApi}
         setUpdatingObj={setUpdatingApi}
         submitBtnCallBack={handleSubmit}
+        initialValues={{ menuId: updatingApi.menu && updatingApi.menu.menuId }}
       >
         <Item name="title" label="Api名" rules={[{ required: true }]}>
           <Input allowClear={true} />

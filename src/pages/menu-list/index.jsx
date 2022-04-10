@@ -159,13 +159,15 @@ export default function MenuList() {
         <Item name="key" label="路径" rules={[{ required: true }]}>
           <Input allowClear={true} />
         </Item>
-        <Item
-          name="componentPath"
-          label="组件目录"
-          rules={[{ required: true }]}
-        >
-          <Input allowClear={true} />
-        </Item>
+        {updatingMenu.parentMenuId ? (
+          <Item
+            name="componentPath"
+            label="组件目录"
+            rules={[{ required: true }]}
+          >
+            <Input allowClear={true} />
+          </Item>
+        ) : null}
         <Item name="icon" label="图标" rules={[{ required: true }]}>
           <Input allowClear={true} />
         </Item>

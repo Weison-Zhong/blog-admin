@@ -36,13 +36,6 @@ const routes = [
         keepAlive: true,
       },
       {
-        name: "权限管理",
-        key: "system/permission",
-        componentPath: "permission-manage",
-        icon: <KeyOutlined />,
-        keepAlive: false,
-      },
-      {
         name: "Api列表",
         key: "system/api",
         componentPath: "api-list",
