@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef } from "react";
-import { Modal, Form, Button, message } from "antd";
+import { useEffect, useRef } from "react";
+import { Modal, Form, Button } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 const { Item } = Form;
 
@@ -9,25 +9,22 @@ export default function FormModal(props) {
   const {
     isShowModal,
     setIsShowModal,
-    children,
-    formConfig,
+    isSubmitting,
     updatingObj,
     setUpdatingObj,
-    width,
     title,
     submitBtnCallBack,
+    formConfig,
+    children,
   } = props;
-  const { layout, tailLayout } = formConfig || {};
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { width, layout, tailLayout } = formConfig || {};
+
   const resetFormData = () => {
     form.resetFields();
   };
   const handleAfterModalClose = () => {
     setUpdatingObj({});
     resetFormData();
-  };
-  const handleCancel = () => {
-    setIsShowModal(false);
   };
   useEffect(() => {
     setTimeout(() => {
@@ -40,18 +37,12 @@ export default function FormModal(props) {
       visible={isShowModal}
       footer={null}
       afterClose={handleAfterModalClose}
-      onCancel={handleCancel}
+      onCancel={() => {
+        setIsShowModal(false);
+      }}
       width={width}
     >
-      <Form
-        {...layout}
-        form={form}
-        ref={formRef}
-        // onFinish={(data) => {
-        //   submitBtnCallBack(data);
-        // }}
-        onFinish={submitBtnCallBack}
-      >
+      <Form {...layout} form={form} ref={formRef} onFinish={submitBtnCallBack}>
         {children}
         <Item {...tailLayout}>
           <Button

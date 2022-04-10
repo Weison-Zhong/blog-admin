@@ -31,7 +31,7 @@ const routes = [
       {
         name: "角色管理",
         key: "system/role",
-        componentPath: "role-manage",
+        componentPath: "role-list",
         icon: <IconFont type="icon-yewujiaose" />,
         keepAlive: true,
       },

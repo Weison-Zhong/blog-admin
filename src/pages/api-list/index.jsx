@@ -1,10 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Button, Table, Modal, Form, Input, message, Select } from "antd";
-import {
-  FormOutlined,
-  DeleteOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Button, Table, Form, Input, message, Select } from "antd";
+import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   addApiApi,
   deleteApiApi,
@@ -13,27 +9,27 @@ import {
   getMenusApi,
 } from "../../axios/api";
 import { isArray } from "@/utils/is";
-import { useDispatch } from "react-redux";
+import FormModal from "@/components/FormModal";
+import DeleteModal from "@/components/DeleteModal";
 const { Item } = Form;
 const { Option } = Select;
-const layout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 16 },
-};
-const tailLayout = {
-  wrapperCol: { offset: 6, span: 16 },
+const formConfig = {
+  width: 550,
+  layout: {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
+  },
+  tailLayout: {
+    wrapperCol: { offset: 6, span: 16 },
+  },
 };
 
-export default function PermissionManage() {
-  const formRef = useRef();
-  const [isShowAddUpdatePermissionModal, setIsShowAddUpdatePermissionModal] =
-    useState(false);
-  const [updatingPermission, setUpdatingPermission] = useState({});
+export default function ApiList() {
+  const [isShowModal, setIsShowModal] = useState(false);
+  const [updatingApi, setUpdatingApi] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDeletingPermission, setIsDeletingRole] = useState(false);
-  const [deletingPermission, setDeletingRole] = useState({});
-  const [form] = Form.useForm();
-  const [permissionList, setPermissionList] = useState([]);
+  const [deletingApi, setDeletingApi] = useState({});
+  const [ApiList, setApiList] = useState([]);
   const [flattenMenuList, setFlattenMenuList] = useState([]);
   const columns = [
     {
@@ -62,10 +58,31 @@ export default function PermissionManage() {
       align: "center",
     },
     {
-      title: "创建时间",
+      title: "所属菜单",
       width: 200,
       dataIndex: "createdDate",
       align: "center",
+      // render: (row) => {
+      //   return (
+      //     <div>
+      //       <Button
+      //         type="primary"
+      //         icon={<FormOutlined />}
+      //         onClick={() => handleEditApiClick(row)}
+      //       />
+      //       <Button
+      //         type="primary"
+      //         danger
+      //         icon={<DeleteOutlined />}
+      //         style={{
+      //           display: "inline-block",
+      //           marginLeft: "10px",
+      //         }}
+      //         onClick={() => handleDeleteApiClick(row)}
+      //       />
+      //     </div>
+      //   );
+      // },
     },
     {
       title: "说明",
@@ -83,7 +100,7 @@ export default function PermissionManage() {
             <Button
               type="primary"
               icon={<FormOutlined />}
-              onClick={() => handleEditPermissionClick(row)}
+              onClick={() => handleEditApiClick(row)}
             />
             <Button
               type="primary"
@@ -101,17 +118,19 @@ export default function PermissionManage() {
     },
   ];
   function handleDeleteApiClick(row) {
-    setDeletingRole(row);
+    setDeletingApi(row);
   }
-  async function fetchPermissions() {
+  async function fetchApis() {
     const res = await getApisApi();
     //若axios没有加全局拦截器，那么走不到这里，控制台会报Uncaught (in promise) Error错误，但是如果上面await那里加了catch则可以继续执行，res是undefined;
     //若axios的interceptors.response.use()第二个参数有处理，则返回我们return的东西。
     const { code, data } = res || {};
+    console.log({ res });
     if (code !== 200) return;
     data.forEach((item, i) => (item.index = i + 1));
-    setPermissionList(data);
+    setApiList(data);
   }
+  //请求菜单数据并摊平一维数组
   async function fetchMenus() {
     const res = await getMenusApi();
     const { code, data } = res || {};
@@ -129,131 +148,88 @@ export default function PermissionManage() {
     console.log({ flattenMenus });
     setFlattenMenuList(flattenMenus);
   }
-  //新增或修改权限API
-  const addOrUpdatePermission = async (newPermission) => {
-    const { id } = updatingPermission;
+  //新增或修改API
+  const handleSubmit = async (newApi) => {
+    const { id } = updatingApi;
     setIsSubmitting(true);
     let res = null;
     if (id) {
-      //修改权限
-      newPermission.id = id;
-      res = await updateApiApi(newPermission);
+      //修改
+      newApi.id = id;
+      res = await updateApiApi(newApi);
     } else {
-      //新增权限
-      res = await addApiApi(newPermission);
+      //新增
+      res = await addApiApi(newApi);
     }
     setIsSubmitting(false);
     const { code, msg } = res || {};
     if (code !== 200) return;
     message.success(msg);
-    setIsShowAddUpdatePermissionModal(false);
-    fetchPermissions();
+    setIsShowModal(false);
+    fetchApis();
   };
-  //删除权限API
-  async function handleDeletePermission() {
-    setIsDeletingRole(true);
-    const { id } = deletingPermission || {};
+  //删除Api
+  async function handleDeleteApi() {
+    const { id } = deletingApi || {};
     if (!id) return;
     const res = await deleteApiApi(id);
     const { code, msg } = res || {};
-    setIsDeletingRole(false);
     if (code !== 200) return;
     message.success(msg);
-    setDeletingRole({});
-    fetchPermissions();
+    setDeletingApi({});
+    fetchApis();
   }
-  //修改权限按钮
-  function handleEditPermissionClick(row) {
-    setUpdatingPermission(row);
-    setIsShowAddUpdatePermissionModal(true);
-    //下面不放异步的话或，首次进入点击编辑会报错（因为读取formRef时form dom未生成,猜测是antd的Modal也是异步生成）
-    setTimeout(() => {
-      formRef.current.setFieldsValue(row);
-    }, 0);
+  //修改Api按钮
+  function handleEditApiClick(row) {
+    setUpdatingApi(row);
+    setIsShowModal(true);
   }
-  const handleModalClose = () => {
-    form.resetFields();
-    setUpdatingPermission({});
-  };
-  const handleCancel = () => {
-    setIsShowAddUpdatePermissionModal(false);
-  };
-  const onReset = () => {
-    form.resetFields();
-  };
   //初始化
   useEffect(() => {
-    fetchPermissions();
+    fetchApis();
     fetchMenus();
   }, []);
 
   return (
-    <div className="permission-manage">
+    <div className="api-list">
       <div className="content-container">
-        <Button
-          type="primary"
-          onClick={() => setIsShowAddUpdatePermissionModal(true)}
-        >
-          添加权限
+        <Button type="primary" onClick={() => setIsShowModal(true)}>
+          添加Api
         </Button>
-        <Table columns={columns} dataSource={permissionList} rowKey="id" />
+        <Table columns={columns} dataSource={ApiList} rowKey="id" />
       </div>
-      <Modal
-        title={updatingPermission.id ? "修改权限" : "添加权限"}
-        visible={isShowAddUpdatePermissionModal}
-        onCancel={handleCancel}
-        footer={null}
-        width={550}
-        afterClose={handleModalClose}
+      <FormModal
+        formConfig={formConfig}
+        title={"Api"}
+        isShowModal={isShowModal}
+        setIsShowModal={setIsShowModal}
+        isSubmitting={isSubmitting}
+        updatingObj={updatingApi}
+        setUpdatingObj={setUpdatingApi}
+        submitBtnCallBack={handleSubmit}
       >
-        <Form
-          {...layout}
-          form={form}
-          ref={formRef}
-          name="control-hooks"
-          onFinish={addOrUpdatePermission}
-          className="form-container"
-          initialValues={{}}
-        >
-          <Item name="title" label="权限名" rules={[{ required: true }]}>
-            <Input allowClear={true} />
-          </Item>
-          <Item name="key" label="路径" rules={[{ required: true }]}>
-            <Input allowClear={true} />
-          </Item>
-          <Item name="description" label="说明" rules={[{ required: true }]}>
-            <Input.TextArea allowClear={true} />
-          </Item>
-          <Item name="menuId" label="所属菜单" rules={[{ required: false }]}>
-            <Select style={{ width: 220 }} placeholder="请选择所属菜单">
-              {flattenMenuList.map((item) => (
-                <Option key={item.id}>{item.name}</Option>
-              ))}
-            </Select>
-          </Item>
-          <Item {...tailLayout}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={isSubmitting ? <LoadingOutlined /> : null}
-            >
-              {isSubmitting ? "提交中" : "提交"}
-            </Button>
-            <Button htmlType="button" onClick={onReset}>
-              重置所有
-            </Button>
-          </Item>
-        </Form>
-      </Modal>
-      <Modal
-        visible={deletingPermission.id}
-        confirmLoading={isDeletingPermission}
-        closable={false}
-        onOk={() => handleDeletePermission()}
-        onCancel={() => setDeletingRole({})}
-      >
-        确定要删除权限: {deletingPermission.name} 吗?
-      </Modal>
+        <Item name="title" label="Api名" rules={[{ required: true }]}>
+          <Input allowClear={true} />
+        </Item>
+        <Item name="key" label="路径" rules={[{ required: true }]}>
+          <Input allowClear={true} />
+        </Item>
+        <Item name="description" label="说明" rules={[{ required: true }]}>
+          <Input.TextArea allowClear={true} />
+        </Item>
+        <Item name="menuId" label="所属菜单" rules={[{ required: false }]}>
+          <Select style={{ width: 220 }} placeholder="请选择所属菜单">
+            {flattenMenuList.map((item) => (
+              <Option key={item.id}>{item.name}</Option>
+            ))}
+          </Select>
+        </Item>
+      </FormModal>
+      <DeleteModal
+        deletingObj={deletingApi}
+        setDeletingObj={setDeletingApi}
+        onDelete={handleDeleteApi}
+      />
     </div>
   );
 }

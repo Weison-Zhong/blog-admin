@@ -118,24 +118,24 @@ export async function getMenusApi() {
     method: "get",
   });
 }
-export async function addOrUpdateMenuApi(data) {
+//新增菜单
+export async function addMenuApi(data) {
+  return request({
+    url: "/api/AddMenu",
+    method: "post",
+    data,
+  });
+}
+//修改菜单
+export async function updateMenuApi(data) {
   const { id } = data || {};
-  if (id) {
-    return request({
-      url: `/api/UpdateMenu/${id}`,
-      method: "put",
-      data,
-    });
-  } else {
-    return request({
-      url: "/api/AddMenu",
-      method: "post",
-      data,
-    });
-  }
+  return request({
+    url: `/api/UpdateMenu/${id}`,
+    method: "put",
+    data,
+  });
 }
 //删除单个菜单
-//删除Api
 export async function deleteMenuApi(id) {
   return request({
     url: `/api/DeleteMenu/${id}`,
