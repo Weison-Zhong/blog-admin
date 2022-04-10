@@ -112,6 +112,7 @@ export default function MenuList() {
   }, []);
   const handleSubmit = async (data) => {
     console.log({ data });
+    setIsSubmitting(true);
     const { id, parentMenuId } = updatingMenu;
     parentMenuId && (data.parentMenuId = parentMenuId);
     let res = null;

@@ -8,7 +8,6 @@ import {
   getApisApi,
   getMenusApi,
 } from "../../axios/api";
-import { isArray } from "@/utils/is";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 const { Item } = Form;
@@ -30,7 +29,7 @@ export default function ApiList() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingApi, setDeletingApi] = useState({});
   const [ApiList, setApiList] = useState([]);
-  const [flattenMenuList, setFlattenMenuList] = useState([]);
+  const [menuList, setMenuList] = useState([]);
   const columns = [
     {
       title: "序号",
@@ -54,7 +53,7 @@ export default function ApiList() {
       key: "key",
       ellipsis: true,
       textWrap: "word-break",
-      width: 100,
+      width: 300,
       align: "center",
     },
     {
@@ -118,18 +117,7 @@ export default function ApiList() {
     const res = await getMenusApi();
     const { code, data } = res || {};
     if (code !== 200) return;
-    function travel(_menus) {
-      _menus.forEach((menu) => {
-        flattenMenus.push(menu);
-        if (isArray(menu.children) && menu.children.length) {
-          travel(menu.children);
-        }
-      });
-    }
-    const flattenMenus = [];
-    travel(data);
-    console.log({ flattenMenus });
-    setFlattenMenuList(flattenMenus);
+    setMenuList(data);
   }
   //新增或修改API
   const handleSubmit = async (newApi) => {
@@ -198,12 +186,12 @@ export default function ApiList() {
         <Item name="key" label="路径" rules={[{ required: true }]}>
           <Input allowClear={true} />
         </Item>
-        <Item name="description" label="说明" rules={[{ required: true }]}>
+        <Item name="description" label="说明" rules={[{ required: false }]}>
           <Input.TextArea allowClear={true} />
         </Item>
         <Item name="menuId" label="所属菜单" rules={[{ required: false }]}>
           <Select style={{ width: 220 }} placeholder="请选择所属菜单">
-            {flattenMenuList.map((item) => (
+            {menuList.map((item) => (
               <Option key={item.id}>{item.name}</Option>
             ))}
           </Select>

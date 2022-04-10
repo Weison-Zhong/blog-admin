@@ -1,9 +1,9 @@
-import { Button, Table } from "antd";
+import { Button, Table, Tree, Drawer } from "antd";
 import "./index.less";
 import React, { useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
-import { getRolesApi } from "@/axios/api";
+import { getRolesApi, getMenusApi } from "@/axios/api";
 import {
   FormOutlined,
   DeleteOutlined,
@@ -21,8 +21,51 @@ const formConfig = {
     wrapperCol: { offset: 6, span: 16 },
   },
 };
+const treeData = [
+  {
+    title: "parent 1",
+    key: "0-0",
+    children: [
+      {
+        title: "parent 1-0",
+        key: "0-0-0",
+        disabled: true,
+        children: [
+          {
+            title: "leaf",
+            key: "0-0-0-0",
+            disableCheckbox: true,
+          },
+          {
+            title: "leaf",
+            key: "0-0-0-1",
+          },
+        ],
+      },
+      {
+        title: "parent 1-1",
+        key: "0-0-1",
+        children: [
+          {
+            title: (
+              <span
+                style={{
+                  color: "#1890ff",
+                }}
+              >
+                sss
+              </span>
+            ),
+            key: "0-0-1-0",
+          },
+        ],
+      },
+    ],
+  },
+];
 export default function RoleList() {
   const [isShowModal, setIsShowModal] = useState(false);
+  const [isShowDrawer, setIsShowDrawer] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingRole, setDeletingRole] = useState({});
   const [updatingRole, setUpdatingRole] = useState({});
@@ -89,6 +132,17 @@ export default function RoleList() {
       },
     },
   ];
+  //a
+
+  const onSelect = (selectedKeys, info) => {
+    console.log("selected", selectedKeys, info);
+  };
+
+  const onCheck = (checkedKeys, info) => {
+    console.log("onCheck", checkedKeys, info);
+  };
+  //b
+
   const fetchRoles = async () => {
     const res = await getRolesApi();
     console.log({ res });
@@ -97,14 +151,21 @@ export default function RoleList() {
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
+  const fetchMenus = async () => {
+    const res = await getMenusApi();
+    console.log({ res });
+  };
   const handleEditRoleClick = (row) => {};
   const handleDeleteRoleClick = (row) => {};
   const handleEditMenuClick = (row) => {};
-  const handleEditPermissionClick = (row) => {};
+  const handleEditPermissionClick = (row) => {
+    setIsShowDrawer(true);
+  };
   const handleSubmit = () => {};
   const handleDeleteRole = () => {};
   useEffect(() => {
     fetchRoles();
+    fetchMenus();
   }, []);
   return (
     <div className="role-list">
@@ -123,14 +184,28 @@ export default function RoleList() {
         updatingObj={updatingRole}
         setUpdatingObj={setUpdatingRole}
         submitBtnCallBack={handleSubmit}
-      >
-          
-      </FormModal>
+      ></FormModal>
       <DeleteModal
         deletingObj={deletingRole}
         setDeletingObj={setDeletingRole}
         onDelete={handleDeleteRole}
-      />
+      />{" "}
+      <Drawer
+        title="设置权限"
+        placement="right"
+        onClose={() => setIsShowDrawer(false)}
+        visible={isShowDrawer}
+      >
+        <Tree
+          checkable
+          defaultExpandedKeys={["0-0-0", "0-0-1"]}
+          defaultSelectedKeys={["0-0-0", "0-0-1"]}
+          defaultCheckedKeys={["0-0-0", "0-0-1"]}
+          onSelect={onSelect}
+          onCheck={onCheck}
+          treeData={treeData}
+        />
+      </Drawer>
     </div>
   );
 }
