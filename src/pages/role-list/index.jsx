@@ -1,16 +1,22 @@
-import { Button, Table, Tree, Drawer } from "antd";
+import { Button, Table, Tree, Drawer, message, Space } from "antd";
 import "./index.less";
 import React, { useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
-import { getRolesApi, getMenusApi } from "@/axios/api";
+import {
+  getRolesApi,
+  getMenuApisApi,
+  updatePermissionForRoleApi,
+} from "@/axios/api";
+import { isArray } from "@/utils/is";
 import {
   FormOutlined,
   DeleteOutlined,
   UnorderedListOutlined,
   KeyOutlined,
 } from "@ant-design/icons";
-
+let treeData = [];
+let flattenPermissions = [];
 const formConfig = {
   width: 550,
   layout: {
@@ -21,48 +27,21 @@ const formConfig = {
     wrapperCol: { offset: 6, span: 16 },
   },
 };
-const treeData = [
-  {
-    title: "parent 1",
-    key: "0-0",
-    children: [
-      {
-        title: "parent 1-0",
-        key: "0-0-0",
-        disabled: true,
-        children: [
-          {
-            title: "leaf",
-            key: "0-0-0-0",
-            disableCheckbox: true,
-          },
-          {
-            title: "leaf",
-            key: "0-0-0-1",
-          },
-        ],
-      },
-      {
-        title: "parent 1-1",
-        key: "0-0-1",
-        children: [
-          {
-            title: (
-              <span
-                style={{
-                  color: "#1890ff",
-                }}
-              >
-                sss
-              </span>
-            ),
-            key: "0-0-1-0",
-          },
-        ],
-      },
-    ],
-  },
-];
+function getFlattenPermissions(menuPermissions) {
+  const res = [];
+  function travel(_permission) {
+    _permission.forEach((permission) => {
+      if (permission.apiId) {
+        res.push(permission);
+      }
+      if (isArray(permission.children) && permission.children.length) {
+        travel(permission.children);
+      }
+    });
+  }
+  travel(menuPermissions);
+  return res;
+}
 export default function RoleList() {
   const [isShowModal, setIsShowModal] = useState(false);
   const [isShowDrawer, setIsShowDrawer] = useState(false);
@@ -102,28 +81,28 @@ export default function RoleList() {
             <Button
               icon={<KeyOutlined />}
               type="link"
-              onClick={handleEditPermissionClick}
+              onClick={() => handleEditPermissionClick(row)}
             >
               设置权限
             </Button>
             <Button
               icon={<UnorderedListOutlined />}
               type="link"
-              onClick={handleEditMenuClick}
+              onClick={() => handleEditMenuClick(row)}
             >
               分配菜单
             </Button>
             <Button
               icon={<FormOutlined />}
               type="link"
-              onClick={handleEditRoleClick}
+              onClick={() => handleEditRoleClick(row)}
             >
               编辑
             </Button>
             <Button
               icon={<DeleteOutlined />}
               type="link"
-              onClick={handleDeleteRoleClick}
+              onClick={() => handleDeleteRoleClick(row)}
             >
               删除
             </Button>
@@ -134,15 +113,20 @@ export default function RoleList() {
   ];
   //a
 
-  const onSelect = (selectedKeys, info) => {
-    console.log("selected", selectedKeys, info);
-  };
-
   const onCheck = (checkedKeys, info) => {
-    console.log("onCheck", checkedKeys, info);
+    /*     这种方式视图不改变
+    updatingRole.permissionCheckedKeys = checkedKeys;
+    setUpdatingRole(updatingRole)  */
+    setUpdatingRole({
+      ...updatingRole,
+      permissionKeys: checkedKeys,
+    });
   };
   //b
-
+  const handleDrawerClose = () => {
+    setIsShowDrawer(false);
+    setUpdatingRole({});
+  };
   const fetchRoles = async () => {
     const res = await getRolesApi();
     console.log({ res });
@@ -151,21 +135,49 @@ export default function RoleList() {
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
-  const fetchMenus = async () => {
-    const res = await getMenusApi();
-    console.log({ res });
+  const fetchMenuApis = async () => {
+    const res = await getMenuApisApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    treeData = data;
+    flattenPermissions = getFlattenPermissions(data);
+  };
+  const handleUpdateRolePermission = async () => {
+    const apiIds = [];
+    updatingRole.permissionKeys.forEach((item) => {
+      if (!item.includes("api/")) return; //排除一级菜单中的id
+      const matchPermission = flattenPermissions.find(
+        (permission) => permission.key === item
+      );
+      apiIds.push(matchPermission.apiId);
+    });
+    const data = {
+      apiIds,
+      roleId: updatingRole.id,
+    };
+    const res = await updatePermissionForRoleApi(data);
+    const { code, msg } = res;
+    if (code !== 200) return;
+    fetchRoles();
+    setIsShowDrawer(false);
+    message.success(msg);
   };
   const handleEditRoleClick = (row) => {};
   const handleDeleteRoleClick = (row) => {};
   const handleEditMenuClick = (row) => {};
   const handleEditPermissionClick = (row) => {
+    const { permissions } = row || {};
+    if (isArray(permissions)) {
+      row.permissionKeys = permissions.map((item) => item.key);
+    }
+    setUpdatingRole(row);
     setIsShowDrawer(true);
   };
   const handleSubmit = () => {};
   const handleDeleteRole = () => {};
   useEffect(() => {
     fetchRoles();
-    fetchMenus();
+    fetchMenuApis();
   }, []);
   return (
     <div className="role-list">
@@ -191,17 +203,22 @@ export default function RoleList() {
         onDelete={handleDeleteRole}
       />{" "}
       <Drawer
-        title="设置权限"
+        title={`设置角色: ${updatingRole.name} 的权限`}
         placement="right"
-        onClose={() => setIsShowDrawer(false)}
         visible={isShowDrawer}
+        onClose={handleDrawerClose}
+        extra={
+          <Space>
+            <Button type="primary" onClick={handleUpdateRolePermission}>
+              OK
+            </Button>
+          </Space>
+        }
       >
         <Tree
           checkable
-          defaultExpandedKeys={["0-0-0", "0-0-1"]}
-          defaultSelectedKeys={["0-0-0", "0-0-1"]}
-          defaultCheckedKeys={["0-0-0", "0-0-1"]}
-          onSelect={onSelect}
+          defaultExpandAll={true}
+          checkedKeys={updatingRole.permissionKeys}
           onCheck={onCheck}
           treeData={treeData}
         />

@@ -37,9 +37,10 @@ export async function updateRoleApi(data) {
   });
 }
 //更新角色的权限数组
-export async function addOrUpdatePermissionsForRole(data) {
+export async function updatePermissionForRoleApi(data) {
+  const { roleId } = data || {};
   return request({
-    url: `/api/AddOrUpdatePermissionsForRole/${data.roleId}`,
+    url: `/api/updatePermissionForRole/${roleId}`,
     method: "post",
     data,
   });
@@ -66,6 +67,13 @@ export async function addAdministratorApi(data) {
 export async function getApisApi() {
   return request({
     url: "/api/GetApis",
+    method: "get",
+  });
+}
+//查询所有菜单下所有api列表
+export async function getMenuApisApi() {
+  return request({
+    url: "/api/GetMenuApis",
     method: "get",
   });
 }
