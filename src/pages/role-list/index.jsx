@@ -7,6 +7,7 @@ import {
   getRolesApi,
   getMenuPermissionListApi,
   updatePermissionForRoleApi,
+  updateMenuForRoleApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
 import {
@@ -18,6 +19,7 @@ import {
 let permissionTreeData = [];
 let menuTreeData = [];
 let flattenPermissions = [];
+let flattenMenus = [];
 const formConfig = {
   width: 550,
   layout: {
@@ -28,19 +30,19 @@ const formConfig = {
     wrapperCol: { offset: 6, span: 16 },
   },
 };
-function getFlattenPermissions(menuPermissions) {
+function getFlattenArray(array) {
   const res = [];
-  function travel(_permission) {
-    _permission.forEach((permission) => {
-      if (permission.apiId) {
-        res.push(permission);
+  function travel(_item) {
+    _item.forEach((item) => {
+      if (item.id) {
+        res.push(item);
       }
-      if (isArray(permission.children) && permission.children.length) {
-        travel(permission.children);
+      if (isArray(item.children) && item.children.length) {
+        travel(item.children);
       }
     });
   }
-  travel(menuPermissions);
+  travel(array);
   return res;
 }
 export default function RoleList() {
@@ -115,13 +117,22 @@ export default function RoleList() {
   ];
   //a
 
-  const onCheck = (checkedKeys, info) => {
+  const handlePermissionItemCheck = (checkedKeys, info) => {
     /*     这种方式视图不改变
     updatingRole.permissionCheckedKeys = checkedKeys;
     setUpdatingRole(updatingRole)  */
     setUpdatingRole({
       ...updatingRole,
       permissionKeys: checkedKeys,
+    });
+  };
+  const handleMenuItemCheck = (checkedKeys, info) => {
+    /*     这种方式视图不改变
+    updatingRole.permissionCheckedKeys = checkedKeys;
+    setUpdatingRole(updatingRole)  */
+    setUpdatingRole({
+      ...updatingRole,
+      menuKeys: checkedKeys,
     });
   };
   //b
@@ -133,7 +144,7 @@ export default function RoleList() {
     setIsShowMenuDrawer(false);
     setUpdatingRole({});
   };
-  const handleUpdateRoleMenu = () => {};
+
   const fetchRoles = async () => {
     const res = await getRolesApi();
     console.log({ res });
@@ -144,14 +155,17 @@ export default function RoleList() {
   };
   const fetchMenuPermissionList = async () => {
     const res = await getMenuPermissionListApi();
-
     const { code, data } = res || {};
     if (code !== 200) return;
     const { permissionList, menuList } = data || {};
-    isArray(permissionList) && (permissionTreeData = permissionList);
-    isArray(menuList) && (menuTreeData = menuList);
-    console.log("a", menuList, permissionList);
-    flattenPermissions = getFlattenPermissions(permissionList);
+    if (isArray(permissionList)) {
+      permissionTreeData = permissionList;
+      flattenPermissions = getFlattenArray(permissionList);
+    }
+    if (isArray(menuList)) {
+      menuTreeData = menuList;
+      flattenMenus = getFlattenArray(menuList);
+    }
   };
   const handleUpdateRolePermission = async () => {
     const apiIds = [];
@@ -160,7 +174,7 @@ export default function RoleList() {
       const matchPermission = flattenPermissions.find(
         (permission) => permission.key === item
       );
-      apiIds.push(matchPermission.apiId);
+      apiIds.push(matchPermission.id);
     });
     const data = {
       apiIds,
@@ -173,13 +187,30 @@ export default function RoleList() {
     setIsShowPermissionDrawer(false);
     message.success(msg);
   };
+  const handleUpdateRoleMenu = async () => {
+    const menuIds = [];
+    updatingRole.menuKeys.forEach((item) => {
+      const matchMenu = flattenMenus.find((menu) => menu.key === item);
+      menuIds.push(matchMenu.id);
+    });
+    const data = {
+      menuIds,
+      roleId: updatingRole.id,
+    };
+    const res = await updateMenuForRoleApi(data);
+    const { code, msg } = res;
+    if (code !== 200) return;
+    fetchRoles();
+    setIsShowMenuDrawer(false);
+    message.success(msg);
+  };
   const handleEditRoleClick = (row) => {};
   const handleDeleteRoleClick = (row) => {};
   const handleEditMenuClick = (row) => {
-    // const { permissions } = row || {};
-    // if (isArray(permissions)) {
-    //   row.permissionKeys = permissions.map((item) => item.key);
-    // }
+    const { menus } = row || {};
+    if (isArray(menus)) {
+      row.menuKeys = menus.map((item) => item.key);
+    }
     setUpdatingRole(row);
     setIsShowMenuDrawer(true);
   };
@@ -237,7 +268,7 @@ export default function RoleList() {
           checkable
           defaultExpandAll={true}
           checkedKeys={updatingRole.permissionKeys}
-          onCheck={onCheck}
+          onCheck={handlePermissionItemCheck}
           treeData={permissionTreeData}
         />
       </Drawer>
@@ -257,8 +288,8 @@ export default function RoleList() {
         <Tree
           checkable
           defaultExpandAll={true}
-          checkedKeys={[]}
-          onCheck={onCheck}
+          checkedKeys={updatingRole.menuKeys}
+          onCheck={handleMenuItemCheck}
           treeData={menuTreeData}
         />
       </Drawer>

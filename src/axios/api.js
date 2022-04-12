@@ -44,6 +44,15 @@ export async function updatePermissionForRoleApi(data) {
     method: "post",
     data,
   });
+} 
+//更新角色的菜单数组
+export async function updateMenuForRoleApi(data) {
+  const { roleId } = data || {};
+  return request({
+    url: `/api/updateMenuForRole/${roleId}`,
+    method: "post",
+    data,
+  });
 }
 //查询管理员列表
 export async function getAdministratorsApi() {
