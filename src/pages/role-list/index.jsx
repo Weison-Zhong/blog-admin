@@ -5,9 +5,8 @@ import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 import {
   getRolesApi,
-  getMenuApisApi,
+  getMenuPermissionListApi,
   updatePermissionForRoleApi,
-  getMenusApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
 import {
@@ -143,19 +142,16 @@ export default function RoleList() {
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
-  const fetchMenuApis = async () => {
-    const res = await getMenuApisApi();
+  const fetchMenuPermissionList = async () => {
+    const res = await getMenuPermissionListApi();
+
     const { code, data } = res || {};
     if (code !== 200) return;
-    permissionTreeData = data;
-    flattenPermissions = getFlattenPermissions(data);
-  };
-  const fetchMenus = async () => {
-    const res = await getMenusApi();
-    const { code, data } = res;
-    console.log("menus", data);
-    if (code !== 200) return;
-    menuTreeData = data;
+    const { permissionList, menuList } = data || {};
+    isArray(permissionList) && (permissionTreeData = permissionList);
+    isArray(menuList) && (menuTreeData = menuList);
+    console.log("a", menuList, permissionList);
+    flattenPermissions = getFlattenPermissions(permissionList);
   };
   const handleUpdateRolePermission = async () => {
     const apiIds = [];
@@ -198,8 +194,7 @@ export default function RoleList() {
   const handleSubmit = () => {};
   const handleDeleteRole = () => {};
   useEffect(() => {
-    fetchMenuApis();
-    fetchMenus();
+    fetchMenuPermissionList();
     fetchRoles();
   }, []);
   return (
@@ -243,7 +238,7 @@ export default function RoleList() {
           defaultExpandAll={true}
           checkedKeys={updatingRole.permissionKeys}
           onCheck={onCheck}
-          permissionTreeData={permissionTreeData}
+          treeData={permissionTreeData}
         />
       </Drawer>
       <Drawer
@@ -262,9 +257,9 @@ export default function RoleList() {
         <Tree
           checkable
           defaultExpandAll={true}
-          checkedKeys={updatingRole.permissionKeys}
+          checkedKeys={[]}
           onCheck={onCheck}
-          permissionTreeData={menuTreeData}
+          treeData={menuTreeData}
         />
       </Drawer>
     </div>

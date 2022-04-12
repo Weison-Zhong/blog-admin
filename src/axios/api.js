@@ -70,10 +70,10 @@ export async function getApisApi() {
     method: "get",
   });
 }
-//查询所有菜单下所有api列表
-export async function getMenuApisApi() {
+//查询所有菜单下所有api及菜单列表
+export async function getMenuPermissionListApi() {
   return request({
-    url: "/api/GetMenuApis",
+    url: "/api/getMenuPermissionList",
     method: "get",
   });
 }
