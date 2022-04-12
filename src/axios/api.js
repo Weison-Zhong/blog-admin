@@ -22,16 +22,17 @@ export async function addRoleApi(data) {
   });
 }
 //删除角色
-export async function deleteRoleApi(roleId) {
+export async function deleteRoleApi(id) {
   return request({
-    url: `/api/DeleteRole/${roleId}`,
+    url: `/api/DeleteRole/${id}`,
     method: "delete",
   });
 }
 //修改角色
 export async function updateRoleApi(data) {
+  const { id } = data || {};
   return request({
-    url: `/api/UpdateRole/${data.id}`,
+    url: `/api/UpdateRole/${id}`,
     method: "put",
     data,
   });
@@ -44,7 +45,7 @@ export async function updatePermissionForRoleApi(data) {
     method: "post",
     data,
   });
-} 
+}
 //更新角色的菜单数组
 export async function updateMenuForRoleApi(data) {
   const { roleId } = data || {};

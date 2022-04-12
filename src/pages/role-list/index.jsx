@@ -1,10 +1,13 @@
-import { Button, Table, Tree, Drawer, message, Space } from "antd";
+import { Button, Table, Tree, Drawer, message, Space, Form, Input } from "antd";
 import "./index.less";
 import React, { useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 import {
   getRolesApi,
+  updateRoleApi,
+  addRoleApi,
+  deleteRoleApi,
   getMenuPermissionListApi,
   updatePermissionForRoleApi,
   updateMenuForRoleApi,
@@ -15,19 +18,21 @@ import {
   DeleteOutlined,
   UnorderedListOutlined,
   KeyOutlined,
+  LoadingOutlined,
 } from "@ant-design/icons";
+const { Item } = Form;
 let permissionTreeData = [];
 let menuTreeData = [];
 let flattenPermissions = [];
 let flattenMenus = [];
 const formConfig = {
-  width: 550,
+  width: 420,
   layout: {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 16 },
+    labelCol: { span: 4 },
+    wrapperCol: { span: 20 },
   },
   tailLayout: {
-    wrapperCol: { offset: 6, span: 16 },
+    wrapperCol: { offset: 4, span: 20 },
   },
 };
 function getFlattenArray(array) {
@@ -115,9 +120,8 @@ export default function RoleList() {
       },
     },
   ];
-  //a
 
-  const handlePermissionItemCheck = (checkedKeys, info) => {
+  const handlePermissionItemCheck = (checkedKeys) => {
     /*     这种方式视图不改变
     updatingRole.permissionCheckedKeys = checkedKeys;
     setUpdatingRole(updatingRole)  */
@@ -126,28 +130,20 @@ export default function RoleList() {
       permissionKeys: checkedKeys,
     });
   };
-  const handleMenuItemCheck = (checkedKeys, info) => {
-    /*     这种方式视图不改变
-    updatingRole.permissionCheckedKeys = checkedKeys;
-    setUpdatingRole(updatingRole)  */
+  const handleMenuItemCheck = (checkedKeys) => {
     setUpdatingRole({
       ...updatingRole,
       menuKeys: checkedKeys,
     });
   };
-  //b
-  const handlePermissionDrawerClose = () => {
-    setIsShowPermissionDrawer(false);
-    setUpdatingRole({});
-  };
-  const handleMenuDrawerClose = () => {
+  const handleDrawerClose = () => {
     setIsShowMenuDrawer(false);
+    setIsShowPermissionDrawer(false);
     setUpdatingRole({});
   };
 
   const fetchRoles = async () => {
     const res = await getRolesApi();
-    console.log({ res });
     const { code, data } = res || {};
     if (code !== 200) return;
     data.forEach((item, i) => (item.index = i + 1));
@@ -168,6 +164,7 @@ export default function RoleList() {
     }
   };
   const handleUpdateRolePermission = async () => {
+    setIsSubmitting(true);
     const apiIds = [];
     updatingRole.permissionKeys.forEach((item) => {
       if (!item.includes("api/")) return; //排除一级菜单中的id
@@ -181,6 +178,7 @@ export default function RoleList() {
       roleId: updatingRole.id,
     };
     const res = await updatePermissionForRoleApi(data);
+    setIsSubmitting(false);
     const { code, msg } = res;
     if (code !== 200) return;
     fetchRoles();
@@ -188,6 +186,7 @@ export default function RoleList() {
     message.success(msg);
   };
   const handleUpdateRoleMenu = async () => {
+    setIsSubmitting(true);
     const menuIds = [];
     updatingRole.menuKeys.forEach((item) => {
       const matchMenu = flattenMenus.find((menu) => menu.key === item);
@@ -198,14 +197,20 @@ export default function RoleList() {
       roleId: updatingRole.id,
     };
     const res = await updateMenuForRoleApi(data);
+    setIsSubmitting(false);
     const { code, msg } = res;
     if (code !== 200) return;
     fetchRoles();
     setIsShowMenuDrawer(false);
     message.success(msg);
   };
-  const handleEditRoleClick = (row) => {};
-  const handleDeleteRoleClick = (row) => {};
+  const handleEditRoleClick = (row) => {
+    setUpdatingRole(row);
+    setIsShowModal(true);
+  };
+  const handleDeleteRoleClick = (row) => {
+    setDeletingRole(row);
+  };
   const handleEditMenuClick = (row) => {
     const { menus } = row || {};
     if (isArray(menus)) {
@@ -222,8 +227,35 @@ export default function RoleList() {
     setUpdatingRole(row);
     setIsShowPermissionDrawer(true);
   };
-  const handleSubmit = () => {};
-  const handleDeleteRole = () => {};
+  const handleSubmit = async (newRole) => {
+    const { id } = updatingRole;
+    setIsSubmitting(true);
+    let res = null;
+    if (id) {
+      //修改
+      newRole.id = id;
+      res = await updateRoleApi(newRole);
+    } else {
+      //新增
+      res = await addRoleApi(newRole);
+    }
+    setIsSubmitting(false);
+    const { code, msg } = res || {};
+    if (code !== 200) return;
+    message.success(msg);
+    setIsShowModal(false);
+    fetchRoles();
+  };
+  const handleDeleteRole = async () => {
+    const { id } = deletingRole || {};
+    if (!id) return;
+    const res = await deleteRoleApi(id);
+    const { code, msg } = res || {};
+    if (code !== 200) return;
+    message.success(msg);
+    setDeletingRole({});
+    fetchRoles();
+  };
   useEffect(() => {
     fetchMenuPermissionList();
     fetchRoles();
@@ -245,7 +277,11 @@ export default function RoleList() {
         updatingObj={updatingRole}
         setUpdatingObj={setUpdatingRole}
         submitBtnCallBack={handleSubmit}
-      ></FormModal>
+      >
+        <Item name="name" label="角色名" rules={[{ required: true }]}>
+          <Input allowClear={true} />
+        </Item>
+      </FormModal>
       <DeleteModal
         deletingObj={deletingRole}
         setDeletingObj={setDeletingRole}
@@ -255,11 +291,15 @@ export default function RoleList() {
         title={`设置角色: ${updatingRole.name} 的权限`}
         placement="right"
         visible={isShowPermissionDrawer}
-        onClose={handlePermissionDrawerClose}
+        onClose={handleDrawerClose}
         extra={
           <Space>
-            <Button type="primary" onClick={handleUpdateRolePermission}>
-              OK
+            <Button
+              type="primary"
+              onClick={handleUpdateRolePermission}
+              icon={isSubmitting ? <LoadingOutlined /> : null}
+            >
+              {isSubmitting ? "提交中" : "提交"}
             </Button>
           </Space>
         }
@@ -276,11 +316,15 @@ export default function RoleList() {
         title={`设置角色: ${updatingRole.name} 的菜单`}
         placement="right"
         visible={isShowMenuDrawer}
-        onClose={handleMenuDrawerClose}
+        onClose={handleDrawerClose}
         extra={
           <Space>
-            <Button type="primary" onClick={handleUpdateRoleMenu}>
-              OK
+            <Button
+              type="primary"
+              onClick={handleUpdateRoleMenu}
+              icon={isSubmitting ? <LoadingOutlined /> : null}
+            >
+              {isSubmitting ? "提交中" : "提交"}
             </Button>
           </Space>
         }

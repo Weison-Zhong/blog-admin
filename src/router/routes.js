@@ -33,7 +33,7 @@ const routes = [
         key: "system/role",
         componentPath: "role-list",
         icon: <IconFont type="icon-yewujiaose" />,
-        keepAlive: true,
+        keepAlive: false,
       },
       {
         name: "Api列表",
