@@ -24,7 +24,7 @@ const routes = [
       {
         name: "用户管理",
         key: "system/user",
-        componentPath: "user-manage",
+        componentPath: "user-list",
         icon: <UserOutlined />,
         keepAlive: false,
       },
