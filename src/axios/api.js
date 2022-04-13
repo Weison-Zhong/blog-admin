@@ -56,17 +56,35 @@ export async function updateMenuForRoleApi(data) {
   });
 }
 //查询管理员列表
-export async function getAdministratorsApi() {
+export async function getUsersApi() {
   return request({
     url: "/api/getAdministrators",
     method: "get",
   });
 }
 //新增管理员
-export async function addAdministratorApi(data) {
+export async function addUserApi(data) {
   return request({
     url: "/api/AddAdministrator",
     method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+//删除管理员
+export async function deleteUserApi(id) {
+  return request({
+    url: `/api/DeleteAdministrator/${id}`,
+    method: "delete",
+  });
+}
+//修改管理员信息
+export async function updateUserApi(userId, data) {
+  return request({
+    url: `/api/UpdateAdministrator/${userId}`,
+    method: "put",
     data,
     headers: {
       "Content-Type": "multipart/form-data",

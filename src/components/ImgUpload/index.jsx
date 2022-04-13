@@ -31,6 +31,7 @@ export default function ImgUpload(props) {
       customRequest={handleUpload}
       beforeUpload={beforeUpload}
       onChange={handleChange}
+      className="img-upload-container"
     >
       {imageUrl ? (
         <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
