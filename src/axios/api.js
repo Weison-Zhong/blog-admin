@@ -146,8 +146,22 @@ export async function addArticleApi(data) {
     },
   });
 }
+//查询文章列表
+export async function getArticlesApi(parmas) {
+  return request({
+    url: "/api/GetArticles",
+    method: "get",
+    parmas,
+  });
+}
+//修改文章展示状态
+export async function toggleArticleStatusApi(id) {
+  return request({
+    url: `/api/toggleArticleStatus/${id}`,
+    method: "put",
+  });
+}
 //获取菜单列表
-//查询文章类型列表
 export async function getMenusApi() {
   return request({
     url: "/api/GetMenus",

@@ -1,0 +1,135 @@
+import React, { Component } from "react";
+import { Button, Table, message, Form, Switch, Input, Select } from "antd";
+import "./index.less";
+import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
+import { getArticlesApi, toggleArticleStatusApi } from "@/axios/api";
+import { isArray } from "@/utils/is";
+export default class ArticleList extends Component {
+  constructor() {
+    super();
+    this.state = {
+      articleList: [],
+      loading: false,
+    };
+  }
+  componentDidMount() {
+    this.fetchArticleList();
+  }
+  fetchArticleList = async () => {
+    const res = await getArticlesApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    console.log({ data });
+    const { articles } = data || {};
+    if (isArray(articles)) {
+      articles.forEach((item, i) => (item.index = i + 1));
+      this.setState({ articleList: articles });
+    }
+  };
+  handleEditArticleClick = (row) => {
+    console.log(row);
+  };
+  handleDeleteArticleClick = (row) => {
+    console.log(row);
+  };
+  handleToggleStatusClick = async (row) => {
+    this.setState({ loading: true });
+    const res = await toggleArticleStatusApi(row.id);
+    const { code, msg } = res || {};
+    if (code === 200) {
+      message.success(msg);
+      this.fetchArticleList();
+    }
+    this.setState({ loading: false });
+  };
+  render() {
+    const { articleList, loading } = this.state;
+    const columns = [
+      {
+        title: "序号",
+        width: 80,
+        dataIndex: "index",
+        align: "center",
+      },
+      {
+        title: "类型",
+        dataIndex: "articleType",
+        key: "articleType",
+        width: 120,
+        align: "center",
+      },
+      {
+        title: "标题",
+        dataIndex: "title",
+        key: "title",
+        ellipsis: true,
+        textWrap: "word-break",
+        align: "center",
+      },
+      {
+        title: "阅读数",
+        dataIndex: "readCount",
+        key: "readCount",
+        width: 80,
+        align: "center",
+      },
+      {
+        title: "更新时间",
+        width: 180,
+        key: "updatedDate",
+        dataIndex: "updatedDate",
+        align: "center",
+      },
+      {
+        title: "是否展示",
+        width: 100,
+        key: "status",
+        dataIndex: "status",
+        align: "center",
+        render: (status, row) => {
+          return (
+            <Switch
+              checked={status}
+              loading={loading}
+              onChange={() => this.handleToggleStatusClick(row)}
+            />
+          );
+        },
+      },
+      {
+        title: "操作",
+        key: "operation",
+        width: 130,
+        align: "center",
+        render: (row) => {
+          return (
+            <div>
+              <Button
+                type="primary"
+                icon={<FormOutlined />}
+                onClick={() => this.handleEditArticleClick(row)}
+              />
+              <Button
+                type="primary"
+                danger
+                icon={<DeleteOutlined />}
+                style={{
+                  display: "inline-block",
+                  marginLeft: "10px",
+                }}
+                onClick={() => this.handleDeleteArticleClick(row)}
+              />
+            </div>
+          );
+        },
+      },
+    ];
+    return (
+      <div className="article-list">
+        <div className="content-container">
+          <Table columns={columns} dataSource={articleList} rowKey="id" />
+        </div>
+      </div>
+    );
+  }
+}

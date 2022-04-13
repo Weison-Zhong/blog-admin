@@ -50,6 +50,13 @@ const routes = [
     icon: <SettingOutlined />,
     children: [
       {
+        name: "文章列表",
+        key: "article/list",
+        componentPath: "article-list",
+        icon: <UserOutlined />,
+        keepAlive: false,
+      },
+      {
         name: "编辑文章",
         key: "article/edit",
         componentPath: "article-edit",

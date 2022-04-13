@@ -194,6 +194,9 @@ export default function UserList() {
         updatingObj={updatingUser}
         setUpdatingObj={setUpdatingUser}
         submitBtnCallBack={handleSubmit}
+        initialValues={{
+          roleId: updatingUser.role && updatingUser.role.roleId,
+        }}
       >
         <Item name="name" label="用户名" rules={[{ required: true }]}>
           <Input allowClear={true} />

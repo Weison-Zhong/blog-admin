@@ -190,7 +190,20 @@ export default function ApiList() {
           <Input.TextArea allowClear={true} />
         </Item>
         <Item name="menuId" label="所属菜单" rules={[{ required: false }]}>
-          <Select style={{ width: 220 }} placeholder="请选择所属菜单">
+          <Select
+            style={{ width: 220 }}
+            placeholder="请选择所属菜单"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+              const children = option.children.toString();
+              if (typeof children === "undefined") {
+                return null;
+              } else {
+                return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              }
+            }}
+          >
             {menuList.map((item) => (
               <Option key={item.id}>{item.name}</Option>
             ))}
