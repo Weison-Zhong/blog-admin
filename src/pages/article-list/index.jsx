@@ -4,9 +4,10 @@ import "./index.less";
 import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
 import { getArticlesApi, toggleArticleStatusApi } from "@/axios/api";
 import { isArray } from "@/utils/is";
+import { Link } from "react-router-dom";
 export default class ArticleList extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       articleList: [],
       loading: false,
@@ -27,7 +28,7 @@ export default class ArticleList extends Component {
     }
   };
   handleEditArticleClick = (row) => {
-    console.log(row);
+    this.props.history.push(`/article/edit?articleId=${row.id}`);
   };
   handleDeleteArticleClick = (row) => {
     console.log(row);

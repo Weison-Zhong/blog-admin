@@ -21,6 +21,7 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import ImgUpload from "../../components/ImgUpload";
 import { useHistory } from "react-router-dom";
+import { queryURLParams } from "@/utils/tools";
 const { Item } = Form;
 const { Option } = Select;
 let imgFile = null;
@@ -29,7 +30,9 @@ let index = 0;
 const onFinish = (values) => {
   console.log({ values });
 };
-export default function Atticle() {
+export default function ArticleEdit() {
+  
+
   const formRef = React.createRef();
   const [form] = Form.useForm();
   const [articleContent, setArticleContent] = useState("");
