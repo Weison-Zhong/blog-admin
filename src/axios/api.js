@@ -183,6 +183,17 @@ export async function addMenuApi(data) {
     data,
   });
 }
+//修改文章
+export async function updateArticleApi(articleId, data) {
+  return request({
+    url: `/api/UpdateArticle/${articleId}`,
+    method: "put",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
 //修改菜单
 export async function updateMenuApi(data) {
   const { id } = data || {};

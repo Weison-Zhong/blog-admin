@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
 import Editor from "for-editor";
-import { addArticleApi, getArticleTypesApi, getArticleApi } from "@/axios/api";
+import {
+  addArticleApi,
+  getArticleTypesApi,
+  getArticleApi,
+  updateArticleApi,
+} from "@/axios/api";
 import {
   Col,
   Divider,
@@ -23,7 +28,6 @@ import { getUrlParams } from "@/utils/tools";
 const { Item } = Form;
 const { Option } = Select;
 let imgFile = null;
-let index = 0;
 export default function ArticleEdit() {
   const formRef = React.createRef();
   const [form] = Form.useForm();
@@ -46,27 +50,26 @@ export default function ArticleEdit() {
     setIsLoading(false);
     const { data, code } = res;
     if (code === 200) {
-      const { content } = data;
+      const { content, coverImgUrl } = data;
       setUpdatingArticle(data);
       setArticleContent(content);
+      setImageUrl(coverImgUrl);
     }
   };
   const addNewArticleType = (e) => {
     e.preventDefault();
-    setArticleTypes([...articleTypes, newArticleType || `New item ${index++}`]);
+    if (!newArticleType) return;
+    setArticleTypes([...articleTypes, newArticleType]);
     setNewArticleType("");
   };
   //保存文章
   const handleSaveArticle = async () => {
     setIsLoading(true);
     try {
+      const { id } = updatingArticle || {};
       const antdFormData = await formRef.current.validateFields();
-      console.log("Validate Success:", antdFormData);
-      if (antdFormData.status) {
-        antdFormData.status = 1;
-      } else {
-        antdFormData.status = 0;
-      }
+      // console.log("Validate Success:", antdFormData);
+      antdFormData.status = Number(antdFormData.status);
       const articleForm = new FormData();
       //遍历antd表单数据插入formdata
       for (let key in antdFormData) {
@@ -74,15 +77,23 @@ export default function ArticleEdit() {
       }
       articleForm.append("content", articleContent);
       articleForm.append("coverImage", imgFile);
-      const res = await addArticleApi(articleForm);
-      console.log({ res });
+      let res = null;
+      if (id) {
+        //修改
+        res = await updateArticleApi(id, articleForm);
+      } else {
+        //新增
+        res = await addArticleApi(articleForm);
+      }
       setIsLoading(false);
-      const { code } = res;
+      const { code, msg } = res;
       if (code !== 200) return;
-      message.success("新增文章成功，正前往列表页");
-      setTimeout(() => {
-        history.push("/article/list");
-      }, 1500);
+      if (!id) {
+        message.success("新增文章成功，正前往列表页");
+        setTimeout(() => {
+          history.push("/article/list");
+        }, 1500);
+      } else message.success(msg);
     } catch (error) {
       message.error("保存失败，请重试");
       setIsLoading(false);
@@ -158,11 +169,7 @@ export default function ArticleEdit() {
                   valuePropName="checked"
                   initialValue={true}
                 >
-                  <Switch
-                    checkedChildren="上架"
-                    unCheckedChildren="隐藏"
-                    checked={true}
-                  />
+                  <Switch checkedChildren="上架" unCheckedChildren="隐藏" />
                 </Item>
               </Col>
             </Row>
