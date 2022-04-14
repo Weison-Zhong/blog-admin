@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/344.fcfbdc7a.chunk.css","mappings":"AAAA,iBAGI,YAAa,CAEb,cAAe,CADf,0BAAJ,CAJA,wBAOM,gBAAN","sources":["pages/role-list/index.less"],"sourcesContent":[".role-list {\n  //最右侧一排按钮\n  .btns {\n    display: flex;\n    justify-content: flex-start;\n    flex-wrap: wrap;\n    button {\n      padding: 4px 10px;\n    }\n  }\n}\n"],"names":[],"sourceRoot":""}
