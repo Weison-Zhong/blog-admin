@@ -1,26 +1,21 @@
-// 封装函数queryURLParams
-// @params:url
-// @return:参数
-// function queryURLParams(url) {
-//   let askIn = url.indexOf("?"),
-//     wellIn = url.indexOf("#"),
-//     askText = "",
-//     wellText = "";
-//   // #不存在
-//   wellIn === -1 ? (wellIn = url.length) : null;
-//   // ?存在
-//   askIn >= 0 ? (askText = url.substring(askIn + 1, wellIn)) : null;
-//   wellText = url.substring(wellIn + 1);
-//   let result = {};
-//   wellText !== "" ? (result["HASH"] = wellText) : null;
-//   if (askText !== "") {
-//     let ary = askText.split("&");
-//     ary.forEach((item) => {
-//       let aryText = item.split("=");
-//       result[aryText[0]] = aryText[1];
-//     });
-//   }
-//   return result;
-// }
+function queryURLParams(url) {
+  let pattern = /(\w+)=(\w+)/gi; //定义正则表达式
+  let parames = {}; // 定义参数对象
+  url.replace(pattern, ($, $1, $2) => {
+    parames[$1] = $2;
+  });
+  return parames;
+}
 
-// export { queryURLParams };
+function getUrlParams(url = window.location.href) {
+  if (!url.includes("?")) return;
+  const theRequest = {};
+  const params = url.split("?")[1];
+  const str = params.split("&");
+  for (let i = 0; i < str.length; i++) {
+    theRequest[str[i].split("=")[0]] = encodeURI(str[i].split("=")[1]);
+  }
+  return theRequest;
+}
+
+export { getUrlParams };

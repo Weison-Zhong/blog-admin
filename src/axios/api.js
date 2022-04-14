@@ -135,6 +135,13 @@ export async function getArticleTypesApi() {
     method: "get",
   });
 }
+//查询文章详情
+export async function getArticleApi(articleId) {
+  return request({
+    url: `/api/GetArticle/${articleId}`,
+    method: "get",
+  });
+}
 //新增文章
 export async function addArticleApi(data) {
   return request({

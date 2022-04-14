@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
 import Editor from "for-editor";
-import { addArticleApi, getArticleTypesApi } from "@/axios/api";
+import { addArticleApi, getArticleTypesApi, getArticleApi } from "@/axios/api";
 import {
-  Alert,
-  Button,
   Col,
   Divider,
   Form,
@@ -21,31 +19,37 @@ import {
 import { PlusOutlined } from "@ant-design/icons";
 import ImgUpload from "../../components/ImgUpload";
 import { useHistory } from "react-router-dom";
-import { queryURLParams } from "@/utils/tools";
+import { getUrlParams } from "@/utils/tools";
 const { Item } = Form;
 const { Option } = Select;
 let imgFile = null;
 let index = 0;
-
-const onFinish = (values) => {
-  console.log({ values });
-};
 export default function ArticleEdit() {
-  
-
   const formRef = React.createRef();
   const [form] = Form.useForm();
   const [articleContent, setArticleContent] = useState("");
   const [articleTypes, setArticleTypes] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [newArticleType, setNewArticleType] = useState("");
+  const [updatingArticle, setUpdatingArticle] = useState({});
   const history = useHistory();
   const fetchArticleTypes = async () => {
     const res = await getArticleTypesApi();
     const { data } = res;
     if (typeof data === "undefined") return;
     setArticleTypes(data);
+  };
+  const fetchArticleDetail = async (articleId) => {
+    setIsLoading(true);
+    const res = await getArticleApi(articleId);
+    setIsLoading(false);
+    const { data, code } = res;
+    if (code === 200) {
+      const { content } = data;
+      setUpdatingArticle(data);
+      setArticleContent(content);
+    }
   };
   const addNewArticleType = (e) => {
     e.preventDefault();
@@ -54,7 +58,7 @@ export default function ArticleEdit() {
   };
   //保存文章
   const handleSaveArticle = async () => {
-    setIsSubmitting(true);
+    setIsLoading(true);
     try {
       const antdFormData = await formRef.current.validateFields();
       console.log("Validate Success:", antdFormData);
@@ -72,7 +76,7 @@ export default function ArticleEdit() {
       articleForm.append("coverImage", imgFile);
       const res = await addArticleApi(articleForm);
       console.log({ res });
-      setIsSubmitting(false);
+      setIsLoading(false);
       const { code } = res;
       if (code !== 200) return;
       message.success("新增文章成功，正前往列表页");
@@ -81,18 +85,22 @@ export default function ArticleEdit() {
       }, 1500);
     } catch (error) {
       message.error("保存失败，请重试");
-      setIsSubmitting(false);
+      setIsLoading(false);
       console.log("Failed:", error);
     }
   };
 
   useEffect(() => {
     fetchArticleTypes();
+    const { articleId } = getUrlParams() || {};
+    articleId && fetchArticleDetail(articleId);
   }, []);
-
+  useEffect(() => {
+    formRef.current && formRef.current.setFieldsValue(updatingArticle);
+  }, [updatingArticle]);
   return (
     <div className="article-edit">
-      <Form form={form} ref={formRef} onFinish={onFinish} className="form">
+      <Form form={form} ref={formRef} className="form">
         <Row gutter={2}>
           <Col span={16}>
             <Item name="title" label="标题" rules={[{ required: true }]}>
@@ -153,7 +161,7 @@ export default function ArticleEdit() {
                   <Switch
                     checkedChildren="上架"
                     unCheckedChildren="隐藏"
-                    defaultChecked={true}
+                    checked={true}
                   />
                 </Item>
               </Col>
@@ -179,7 +187,7 @@ export default function ArticleEdit() {
         value={articleContent}
         onChange={(value) => setArticleContent(value)}
       />
-      <Spin size="large" tip="保存中..." spinning={isSubmitting} />
+      <Spin size="large" tip="加载中..." spinning={isLoading} />
     </div>
   );
 }
