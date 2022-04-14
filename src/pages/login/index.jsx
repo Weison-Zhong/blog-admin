@@ -1,13 +1,30 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, message } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { loginApi } from "../../axios/api";
+import { useDispatch } from "react-redux";
+import { UPDATE_USERINFO, UPDATE_MENUS } from "@/redux/actionTypes";
 import "./index.less";
+import { useHistory } from "react-router-dom";
 export default function Login() {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const onFinish = async (values) => {
     const res = await loginApi(values);
+    console.log({ res });
     const { data } = res;
     if (!data) return message.error("Token值有误，请联系管理员");
-    localStorage.setItem("token", data);
+    const { token, menuList } = data || {};
+    console.log({data});
+    localStorage.setItem("WeisonToken", token);
+    dispatch({
+      type: UPDATE_USERINFO,
+      payload: data,
+    });
+    dispatch({
+      type: UPDATE_MENUS,
+      payload: menuList,
+    });
+    history.push("/");
   };
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);

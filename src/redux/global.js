@@ -1,22 +1,39 @@
+import { UPDATE_USERINFO, UPDATE_MENUS } from "./actionTypes";
+const userInfo = sessionStorage.getItem("userInfo");
+const menus = sessionStorage.getItem("menus");
 const initialState = {
-  userInfo: {
-    name: "weison1",
-    avatar:
-      "https://img0.baidu.com/it/u=2314600222,1003014148&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=500",
-  },
+  userInfo: userInfo
+    ? JSON.parse(userInfo)
+    : {
+        userName: "未知用户",
+        avatar: "https://gitee.com/weison_zhong/images/raw/master/img/logo.png",
+      },
+  menus: menus ? JSON.parse(menus) : [],
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
-    // case UPDATE_ROLELIST: {
-    //     const roleList = action.payload || [];
-    //     //数据持久化
-    //     sessionStorage.setItem("roleList", JSON.stringify(roleList));
-    //     return {
-    //         ...state,
-    //         roleList,
-    //     };
-    // }
+    case UPDATE_USERINFO: {
+      const userInfo = action.payload || {};
+      //数据持久化
+      sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+      return {
+        ...state,
+        userInfo,
+      };
+    }
+    case UPDATE_MENUS: {
+      const menus = action.payload || {};
+      //数据持久化
+      sessionStorage.setItem("menus", JSON.stringify(menus));
+      setTimeout(() => {
+        window.location.reload();
+      }, 0);
+      return {
+        ...state,
+        menus,
+      };
+    }
     default:
       return state;
   }

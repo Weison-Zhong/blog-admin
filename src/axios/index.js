@@ -11,7 +11,7 @@ const http = axios.create({
 
 http.interceptors.request.use(
   (config) => {
-    config.headers.Authorization = localStorage.getItem("token");
+    config.headers.Authorization = localStorage.getItem("WeisonToken");
     return config;
   },
   (err) => {

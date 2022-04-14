@@ -1,18 +1,29 @@
 import React, { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { Switch, Route, Redirect, Link, useLocation } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  Redirect,
+  Link,
+  useLocation,
+  useHistory,
+} from "react-router-dom";
 import loadable from "@loadable/component";
 import { isArray } from "../utils/is";
 import "./index.less";
-import routes from "../router/routes";
+// import menus from "../router/routes";
 import KeepAlive, { AliveScope } from "react-activation";
-import { Layout } from "antd";
+import { Layout, Dropdown } from "antd";
 import { Menu, Button } from "antd";
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  DownOutlined,
+} from "@ant-design/icons";
 const { Header, Sider, Content } = Layout;
 const { Item } = Menu;
 const { SubMenu } = Menu;
-function getFlattenRoutes() {
+function getFlattenRoutes(routes) {
   const res = [];
   function travel(_routes) {
     _routes.forEach((route) => {
@@ -31,7 +42,7 @@ function getFlattenRoutes() {
   return res;
 }
 
-function renderRoutes() {
+function renderRoutes(routes) {
   const nodes = [];
   function travel(_routes, level) {
     return _routes.map((route) => {
@@ -40,13 +51,19 @@ function renderRoutes() {
         //二级及以上目录没有子路由
         if (level > 1) {
           return (
-            <Item key={route.key} icon={route.icon}>
+            <Item
+              key={route.key}
+              icon={<i className={`iconfont ${route.icon}`}></i>}
+            >
               <Link to={`/${route.key}`}>{route.name}</Link>
             </Item>
           ); //-->塞进SubMenu里面
         }
         nodes.push(
-          <Item key={route.key} icon={route.icon}>
+          <Item
+            key={route.key}
+            icon={<i className={`iconfont ${route.icon}`}></i>}
+          >
             <Link to={`/${route.key}`}>{route.name}</Link>
           </Item>
         );
@@ -56,14 +73,21 @@ function renderRoutes() {
         //存在3级及以上目录情况,需要再包一层SubMenu
         if (level > 1) {
           return (
-            <SubMenu key={route.key} icon={route.icon}>
+            <SubMenu
+              key={route.key}
+              icon={<i className={`iconfont ${route.icon}`}></i>}
+            >
               {travel(route.children, level + 1)}
             </SubMenu>
           );
         }
         //进入二级目录递归子路由
         nodes.push(
-          <SubMenu key={route.key} title={route.name} icon={route.icon}>
+          <SubMenu
+            key={route.key}
+            title={route.name}
+            icon={<i className={`iconfont ${route.icon}`}></i>}
+          >
             {travel(route.children, level + 1)}
           </SubMenu>
         );
@@ -75,10 +99,13 @@ function renderRoutes() {
 }
 
 export default function Home() {
+  const history = useHistory();
   const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [collapsed, setCollapsed] = useState(false);
-  const flattenRoutes = useMemo(() => getFlattenRoutes() || [], []);
   const { pathname } = useLocation();
+  let menus = useSelector((state) => state.global.menus) || [];
+  console.log({ menus });
+  const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);
   let defaultSelectedKeys = ["welcome"]; //默认展示欢迎页
   let defaultOpenKeys = [];
   if (pathname) {
@@ -89,7 +116,17 @@ export default function Home() {
   function toggleCollapsed() {
     setCollapsed((collapsed) => !collapsed);
   }
-
+  const logout = () => {
+    localStorage.removeItem("WeisonToken");
+    history.push("/login");
+  };
+  const menu = (
+    <Menu>
+      <Menu.Item key="0" onClick={logout}>
+        退出
+      </Menu.Item>
+    </Menu>
+  );
   return (
     <Layout className="page-layout">
       <Header className="header">
@@ -97,14 +134,19 @@ export default function Home() {
           <div className="logo"></div>
           <h5>博客后台管理系统</h5>
         </div>
-        <div className="right">
-          <div className="user-info">
-            <div className="avatar">
-              <img src={userInfo.avatar} alt="" />
+        <Dropdown overlay={menu} trigger={["click"]}>
+          <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+            <div className="right">
+              <div className="user-info">
+                <div className="avatar">
+                  <img src={userInfo.avatar} alt="" />
+                </div>
+                <div className="username">{userInfo.userName}</div>
+              </div>
             </div>
-            <div className="username">{userInfo.name}</div>
-          </div>
-        </div>
+            <DownOutlined />
+          </a>
+        </Dropdown>
       </Header>
       <Layout>
         <Sider
@@ -128,7 +170,7 @@ export default function Home() {
             defaultOpenKeys={defaultOpenKeys}
             mode="inline"
           >
-            {renderRoutes()}
+            {renderRoutes(menus)}
           </Menu>
         </Sider>
         <Content className="content">

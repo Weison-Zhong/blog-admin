@@ -3,6 +3,7 @@ import "./index.less";
 import React, { useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
+import {  UPDATE_MENUS } from "@/redux/actionTypes";
 import {
   getRolesApi,
   updateRoleApi,
@@ -11,6 +12,7 @@ import {
   getMenuPermissionListApi,
   updatePermissionForRoleApi,
   updateMenuForRoleApi,
+  getUserMenusApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
 import {
@@ -20,6 +22,7 @@ import {
   KeyOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
 const { Item } = Form;
 let permissionTreeData = [];
 let menuTreeData = [];
@@ -51,6 +54,7 @@ function getFlattenArray(array) {
   return res;
 }
 export default function RoleList() {
+  const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [isShowPermissionDrawer, setIsShowPermissionDrawer] = useState(false);
   const [isShowMenuDrawer, setIsShowMenuDrawer] = useState(false);
@@ -201,8 +205,19 @@ export default function RoleList() {
     const { code, msg } = res;
     if (code !== 200) return;
     fetchRoles();
+    updateUserMenus();
     setIsShowMenuDrawer(false);
     message.success(msg);
+  };
+  const updateUserMenus = async () => {
+    const res = await getUserMenusApi();
+    console.log({ res });
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    dispatch({
+      type: UPDATE_MENUS,
+      payload: data,
+    });
   };
   const handleEditRoleClick = (row) => {
     setUpdatingRole(row);

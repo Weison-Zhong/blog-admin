@@ -91,6 +91,13 @@ export async function updateUserApi(userId, data) {
     },
   });
 }
+//重新查询用户菜单列表，用于管理系统中更新角色菜单后动态刷新菜单栏
+export async function getUserMenusApi() {
+  return request({
+    url: "/api/GetUserMenus",
+    method: "get",
+  });
+}
 //查询api列表
 export async function getApisApi() {
   return request({
