@@ -2,15 +2,20 @@ import React, { Component } from "react";
 import { Button, Table, message, Form, Switch, Input, Select } from "antd";
 import "./index.less";
 import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
-import { getArticlesApi, toggleArticleStatusApi } from "@/axios/api";
+import {
+  getArticlesApi,
+  toggleArticleStatusApi,
+  deleteArticleApi,
+} from "@/axios/api";
 import { isArray } from "@/utils/is";
-import { Link } from "react-router-dom";
+import DeleteModal from "@/components/DeleteModal";
 export default class ArticleList extends Component {
   constructor(props) {
     super(props);
     this.state = {
       articleList: [],
       loading: false,
+      deletingArticle: {},
     };
   }
   componentDidMount() {
@@ -31,7 +36,7 @@ export default class ArticleList extends Component {
     this.props.history.push(`/article/edit?articleId=${row.id}`);
   };
   handleDeleteArticleClick = (row) => {
-    console.log(row);
+    this.setState({ deletingArticle: row });
   };
   handleToggleStatusClick = async (row) => {
     this.setState({ loading: true });
@@ -43,8 +48,22 @@ export default class ArticleList extends Component {
     }
     this.setState({ loading: false });
   };
+  handleDeleteArticle = async () => {
+    const { id } = this.state.deletingArticle || {};
+    if (id) {
+      const res = await deleteArticleApi(id);
+      const { msg, code } = res || {};
+      if (code !== 200) return;
+      this.fetchArticleList();
+      message.success(msg);
+      this.setState({ deletingArticle: {} });
+    }
+  };
+  setDeletingArticle = (deletingArticle) => {
+    this.setState({ deletingArticle });
+  };
   render() {
-    const { articleList, loading } = this.state;
+    const { articleList, loading, deletingArticle } = this.state;
     const columns = [
       {
         title: "序号",
@@ -130,6 +149,11 @@ export default class ArticleList extends Component {
         <div className="content-container">
           <Table columns={columns} dataSource={articleList} rowKey="id" />
         </div>
+        <DeleteModal
+          deletingObj={deletingArticle}
+          setDeletingObj={this.setDeletingArticle}
+          onDelete={this.handleDeleteArticle}
+        />
       </div>
     );
   }

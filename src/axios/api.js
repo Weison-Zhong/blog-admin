@@ -140,6 +140,7 @@ export async function getArticleApi(articleId) {
   return request({
     url: `/api/GetArticle/${articleId}`,
     method: "get",
+    params: { origin: "admin" },
   });
 }
 //新增文章
@@ -168,6 +169,24 @@ export async function toggleArticleStatusApi(id) {
     method: "put",
   });
 }
+//删除文章
+export async function deleteArticleApi(id) {
+  return request({
+    url: `/api/DeleteArticle/${id}`,
+    method: "delete",
+  });
+}
+//修改文章
+export async function updateArticleApi(articleId, data) {
+  return request({
+    url: `/api/UpdateArticle/${articleId}`,
+    method: "put",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
 //获取菜单列表
 export async function getMenusApi() {
   return request({
@@ -181,17 +200,6 @@ export async function addMenuApi(data) {
     url: "/api/AddMenu",
     method: "post",
     data,
-  });
-}
-//修改文章
-export async function updateArticleApi(articleId, data) {
-  return request({
-    url: `/api/UpdateArticle/${articleId}`,
-    method: "put",
-    data,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
   });
 }
 //修改菜单
