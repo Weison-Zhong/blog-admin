@@ -225,3 +225,10 @@ export async function deleteMenuApi(id) {
     method: "delete",
   });
 }
+//获取访客列表
+export async function getGuestsApi() {
+  return request({
+    url: "/api/GetGuests",
+    method: "get",
+  });
+}

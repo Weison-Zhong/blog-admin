@@ -79,6 +79,27 @@ const routes = [
       },
     ],
   },
+  {
+    name: "博客管理",
+    key: "blog",
+    icon: <SettingOutlined />,
+    children: [
+      {
+        name: "网站配置",
+        key: "blog/config",
+        componentPath: "blog-config",
+        icon: <UserOutlined />,
+        keepAlive: false,
+      },
+      {
+        name: "访客列表",
+        key: "blog/guest-list",
+        componentPath: "guest-list",
+        icon: <UserOutlined />,
+        keepAlive: false,
+      },
+    ],
+  },
 ];
 
 export default routes;
