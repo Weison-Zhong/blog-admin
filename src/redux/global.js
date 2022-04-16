@@ -6,7 +6,7 @@ const initialState = {
     ? JSON.parse(userInfo)
     : {
         userName: "未知用户",
-        avatar: "https://gitee.com/weison_zhong/images/raw/master/img/logo.png",
+        avatar: "",
       },
   menus: menus ? JSON.parse(menus) : [],
 };

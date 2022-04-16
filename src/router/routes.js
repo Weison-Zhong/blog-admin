@@ -22,17 +22,31 @@ const routes = [
     icon: <SettingOutlined />,
     children: [
       {
-        name: "用户管理",
+        name: "运行监测",
+        key: "system/status",
+        componentPath: "system-status",
+        icon: <ContainerOutlined />,
+        keepAlive: false,
+      },
+      {
+        name: "用户列表",
         key: "system/user",
         componentPath: "user-list",
         icon: <UserOutlined />,
         keepAlive: false,
       },
       {
-        name: "角色管理",
+        name: "角色列表",
         key: "system/role",
         componentPath: "role-list",
         icon: <IconFont type="icon-yewujiaose" />,
+        keepAlive: false,
+      },
+      {
+        name: "菜单列表",
+        key: "system/menu",
+        componentPath: "menu-list",
+        icon: <UserOutlined />,
         keepAlive: false,
       },
       {
@@ -66,20 +80,6 @@ const routes = [
     ],
   },
   {
-    name: "菜单管理",
-    key: "menu",
-    icon: <SettingOutlined />,
-    children: [
-      {
-        name: "菜单列表",
-        key: "menu/list",
-        componentPath: "menu-list",
-        icon: <UserOutlined />,
-        keepAlive: false,
-      },
-    ],
-  },
-  {
     name: "博客管理",
     key: "blog",
     icon: <SettingOutlined />,
@@ -93,7 +93,7 @@ const routes = [
       },
       {
         name: "访客列表",
-        key: "blog/guest-list",
+        key: "blog/guest",
         componentPath: "guest-list",
         icon: <UserOutlined />,
         keepAlive: false,
