@@ -106,8 +106,8 @@ export default function Home() {
   let menus = useSelector((state) => state.global.menus) || [];
   console.log({ menus });
   const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);
-  let defaultSelectedKeys = ["welcome"]; //默认展示欢迎页
-  let defaultOpenKeys = [];
+  let defaultSelectedKeys = ["system/status"]; //默认展示欢迎页
+  let defaultOpenKeys = ["system"];
   if (pathname) {
     const pathArr = pathname.split("/"); //当前路由数组
     defaultSelectedKeys = [pathname.substring(1)]; //根据当前路由得出当前选中的菜单key值,如'system/role'
@@ -196,7 +196,7 @@ export default function Home() {
                   />
                 );
               })}
-              <Redirect push to="/welcome" />
+              <Redirect push to="/system/status" />
             </Switch>
           </AliveScope>
         </Content>

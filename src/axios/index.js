@@ -45,7 +45,7 @@ http.interceptors.response.use(
         break;
       case 401:
         message.error("请先登录！");
-        // window.location.href = '/login';
+        window.location.href = "/login";
         break;
       case 403:
         message.error("权限不足！");

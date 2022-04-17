@@ -11,6 +11,7 @@ import { ConfigProvider } from "antd";
 import { createStore } from "redux";
 import { Provider } from "react-redux";
 import rootReducer from "./redux";
+import PrivateRoute from "./router/PrivateRoute";
 const store = createStore(rootReducer);
 
 function App() {
@@ -20,7 +21,7 @@ function App() {
         <Provider store={store}>
           <Switch>
             <Route exact path="/login" component={Login} />
-            <Route path="/" component={PageLayout} />
+            <PrivateRoute path="/" component={PageLayout} />
           </Switch>
         </Provider>
       </Router>
