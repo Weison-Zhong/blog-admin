@@ -1,6 +1,6 @@
 import { UPDATE_USERINFO, UPDATE_MENUS } from "./actionTypes";
-const userInfo = sessionStorage.getItem("userInfo");
-const menus = sessionStorage.getItem("menus");
+const userInfo = localStorage.getItem("userInfo");
+const menus = localStorage.getItem("menus");
 const initialState = {
   userInfo: userInfo
     ? JSON.parse(userInfo)
@@ -16,7 +16,7 @@ export default function (state = initialState, action) {
     case UPDATE_USERINFO: {
       const userInfo = action.payload || {};
       //数据持久化
-      sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+      localStorage.setItem("userInfo", JSON.stringify(userInfo));
       return {
         ...state,
         userInfo,
@@ -25,7 +25,7 @@ export default function (state = initialState, action) {
     case UPDATE_MENUS: {
       const menus = action.payload || {};
       //数据持久化
-      sessionStorage.setItem("menus", JSON.stringify(menus));
+      localStorage.setItem("menus", JSON.stringify(menus));
       setTimeout(() => {
         window.location.reload();
       }, 0);
