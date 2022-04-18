@@ -232,3 +232,62 @@ export async function getGuestsApi() {
     method: "get",
   });
 }
+//查询项目类型列表
+export async function getProjectTypesApi() {
+  return request({
+    url: "/api/GetProjectTypes",
+    method: "get",
+  });
+}
+//查询项目详情
+export async function getProjectApi(projectId) {
+  return request({
+    url: `/api/GetProject/${projectId}`,
+    method: "get",
+    params: { origin: "admin" },
+  });
+}
+//新增项目
+export async function addProjectApi(data) {
+  return request({
+    url: "/api/AddProject",
+    method: "post",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}
+//查询项目列表
+export async function getProjectsApi(parmas) {
+  return request({
+    url: "/api/GetProjects",
+    method: "get",
+    parmas,
+  });
+}
+//修改项目展示状态
+export async function toggleProjectStatusApi(id) {
+  return request({
+    url: `/api/toggleProjectStatus/${id}`,
+    method: "put",
+  });
+}
+//删除项目
+export async function deleteProjectApi(id) {
+  return request({
+    url: `/api/DeleteProject/${id}`,
+    method: "delete",
+  });
+}
+//修改项目
+export async function updateProjectApi(projectId, data) {
+  return request({
+    url: `/api/UpdateProject/${projectId}`,
+    method: "put",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+}

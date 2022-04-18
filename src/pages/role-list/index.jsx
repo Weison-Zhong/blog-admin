@@ -150,6 +150,7 @@ export default function RoleList() {
     const res = await getRolesApi();
     const { code, data } = res || {};
     if (code !== 200) return;
+    console.log({res})//菜单分配仍有问题待处理,估计要重新设计表结构才行，明确个submenu和menu的关系
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
@@ -200,6 +201,7 @@ export default function RoleList() {
       menuIds,
       roleId: updatingRole.id,
     };
+    console.log({data});
     const res = await updateMenuForRoleApi(data);
     setIsSubmitting(false);
     const { code, msg } = res;
