@@ -3,7 +3,7 @@ import "./index.less";
 import React, { useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
-import { UPDATE_MENUS } from "@/redux/actionTypes";
+import {  UPDATE_MENUS } from "@/redux/actionTypes";
 import {
   getRolesApi,
   updateRoleApi,
@@ -11,17 +11,20 @@ import {
   deleteRoleApi,
   getMenuPermissionListApi,
   updatePermissionForRoleApi,
-  getMenusApi,
+  updateMenuForRoleApi,
+  getUserMenusApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
 import {
   FormOutlined,
   DeleteOutlined,
+  UnorderedListOutlined,
   KeyOutlined,
   LoadingOutlined,
 } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 const { Item } = Form;
+let permissionTreeData = [];
 let menuTreeData = [];
 let flattenPermissions = [];
 let flattenMenus = [];
@@ -54,10 +57,10 @@ export default function RoleList() {
   const dispatch = useDispatch();
   const [isShowModal, setIsShowModal] = useState(false);
   const [isShowPermissionDrawer, setIsShowPermissionDrawer] = useState(false);
+  const [isShowMenuDrawer, setIsShowMenuDrawer] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingRole, setDeletingRole] = useState({});
   const [updatingRole, setUpdatingRole] = useState({});
-  const [permissionTreeData, setPermissionTreeData] = useState({});
   const [roleList, setRoleList] = useState([]);
   const columns = [
     {
@@ -96,6 +99,13 @@ export default function RoleList() {
               设置权限
             </Button>
             <Button
+              icon={<UnorderedListOutlined />}
+              type="link"
+              onClick={() => handleEditMenuClick(row)}
+            >
+              分配菜单
+            </Button>
+            <Button
               icon={<FormOutlined />}
               type="link"
               onClick={() => handleEditRoleClick(row)}
@@ -124,8 +134,14 @@ export default function RoleList() {
       permissionKeys: checkedKeys,
     });
   };
-
+  const handleMenuItemCheck = (checkedKeys) => {
+    setUpdatingRole({
+      ...updatingRole,
+      menuKeys: checkedKeys,
+    });
+  };
   const handleDrawerClose = () => {
+    setIsShowMenuDrawer(false);
     setIsShowPermissionDrawer(false);
     setUpdatingRole({});
   };
@@ -134,9 +150,23 @@ export default function RoleList() {
     const res = await getRolesApi();
     const { code, data } = res || {};
     if (code !== 200) return;
-    console.log("roles res --->", res); //菜单分配仍有问题待处理,估计要重新设计表结构才行，明确个submenu和menu的关系
+    console.log({res})//菜单分配仍有问题待处理,估计要重新设计表结构才行，明确个submenu和menu的关系
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
+  };
+  const fetchMenuPermissionList = async () => {
+    const res = await getMenuPermissionListApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    const { permissionList, menuList } = data || {};
+    if (isArray(permissionList)) {
+      permissionTreeData = permissionList;
+      flattenPermissions = getFlattenArray(permissionList);
+    }
+    if (isArray(menuList)) {
+      menuTreeData = menuList;
+      flattenMenus = getFlattenArray(menuList);
+    }
   };
   const handleUpdateRolePermission = async () => {
     setIsSubmitting(true);
@@ -160,7 +190,37 @@ export default function RoleList() {
     setIsShowPermissionDrawer(false);
     message.success(msg);
   };
-
+  const handleUpdateRoleMenu = async () => {
+    setIsSubmitting(true);
+    const menuIds = [];
+    updatingRole.menuKeys.forEach((item) => {
+      const matchMenu = flattenMenus.find((menu) => menu.key === item);
+      menuIds.push(matchMenu.id);
+    });
+    const data = {
+      menuIds,
+      roleId: updatingRole.id,
+    };
+    console.log({data});
+    const res = await updateMenuForRoleApi(data);
+    setIsSubmitting(false);
+    const { code, msg } = res;
+    if (code !== 200) return;
+    fetchRoles();
+    updateUserMenus();
+    setIsShowMenuDrawer(false);
+    message.success(msg);
+  };
+  const updateUserMenus = async () => {
+    const res = await getUserMenusApi();
+    console.log({ res });
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    dispatch({
+      type: UPDATE_MENUS,
+      payload: data,
+    });
+  };
   const handleEditRoleClick = (row) => {
     setUpdatingRole(row);
     setIsShowModal(true);
@@ -168,7 +228,14 @@ export default function RoleList() {
   const handleDeleteRoleClick = (row) => {
     setDeletingRole(row);
   };
-
+  const handleEditMenuClick = (row) => {
+    const { menus } = row || {};
+    if (isArray(menus)) {
+      row.menuKeys = menus.map((item) => item.key);
+    }
+    setUpdatingRole(row);
+    setIsShowMenuDrawer(true);
+  };
   const handleEditPermissionClick = (row) => {
     const { permissions } = row || {};
     if (isArray(permissions)) {
@@ -206,31 +273,9 @@ export default function RoleList() {
     setDeletingRole({});
     fetchRoles();
   };
-  const fetchMenus = async () => {
-    const res = await getMenusApi();
-    console.log("menus --->", res);
-    const { data, code } = res || {};
-    if (code !== 200) return;
-    const childrenArr = data.map((item) => item.children);
-    const flattenChildMenus = [];
-    childrenArr.forEach((item) => flattenChildMenus.push(...item));
-    const treeData = [];
-    flattenChildMenus.forEach((item) => {
-      const { key, name, apis } = item;
-      treeData.push({
-        title: name,
-        key,
-        children: apis,
-      });
-    });
-    setPermissionTreeData(treeData);
-    flattenPermissions = getFlattenArray(treeData);
-    console.log({ flattenPermissions });
-  };
   useEffect(() => {
-    // fetchMenuPermissionList();
+    fetchMenuPermissionList();
     fetchRoles();
-    fetchMenus();
   }, []);
   return (
     <div className="role-list">
@@ -282,6 +327,31 @@ export default function RoleList() {
           checkedKeys={updatingRole.permissionKeys}
           onCheck={handlePermissionItemCheck}
           treeData={permissionTreeData}
+        />
+      </Drawer>
+      <Drawer
+        title={`设置角色: ${updatingRole.name} 的菜单`}
+        placement="right"
+        visible={isShowMenuDrawer}
+        onClose={handleDrawerClose}
+        extra={
+          <Space>
+            <Button
+              type="primary"
+              onClick={handleUpdateRoleMenu}
+              icon={isSubmitting ? <LoadingOutlined /> : null}
+            >
+              {isSubmitting ? "提交中" : "提交"}
+            </Button>
+          </Space>
+        }
+      >
+        <Tree
+          checkable
+          defaultExpandAll={true}
+          checkedKeys={updatingRole.menuKeys}
+          onCheck={handleMenuItemCheck}
+          treeData={menuTreeData}
         />
       </Drawer>
     </div>
