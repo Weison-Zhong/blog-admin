@@ -103,7 +103,7 @@ export default function Home() {
   const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [collapsed, setCollapsed] = useState(false);
   const { pathname } = useLocation();
-  let menus = useSelector((state) => state.global.menus) || [];
+  // let menus = useSelector((state) => state.global.menus) || [];
   console.log({ menus });
   const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);
   let defaultSelectedKeys = ["system/status"]; //默认展示欢迎页

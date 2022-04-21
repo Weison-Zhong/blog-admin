@@ -98,6 +98,13 @@ const routes = [
         icon: <UserOutlined />,
         keepAlive: false,
       },
+      {
+        name: "Icon列表",
+        key: "blog/icon",
+        componentPath: "icon-list",
+        icon: <UserOutlined />,
+        keepAlive: false,
+      },
     ],
   },
 ];
