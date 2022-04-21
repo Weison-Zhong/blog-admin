@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   getMenusApi,
-  addMenuApi,
+  addChildMenuApi,
   updateMenuApi,
   deleteMenuApi,
 } from "@/axios/api";
@@ -103,7 +103,7 @@ export default function MenuList() {
   const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
-    console.log({ res });
+    console.log("menus-->", data);
     if (code !== 200) return;
     setMenus(data);
   };
@@ -121,7 +121,7 @@ export default function MenuList() {
       res = await updateMenuApi(data);
     } else {
       //新增
-      res = await addMenuApi(data);
+      res = await addChildMenuApi(data);
     }
     setIsSubmitting(false);
     const { code, msg } = res || {};

@@ -91,7 +91,7 @@ export async function updateUserApi(userId, data) {
     },
   });
 }
-//重新查询用户菜单列表，用于管理系统中更新角色菜单后动态刷新菜单栏
+//重新查询用户菜单列表
 export async function getUserMenusApi() {
   return request({
     url: "/api/GetUserMenus",
@@ -102,13 +102,6 @@ export async function getUserMenusApi() {
 export async function getApisApi() {
   return request({
     url: "/api/GetApis",
-    method: "get",
-  });
-}
-//查询所有菜单下所有api及菜单列表
-export async function getMenuPermissionListApi() {
-  return request({
-    url: "/api/getMenuPermissionList",
     method: "get",
   });
 }
@@ -201,10 +194,10 @@ export async function getMenusApi() {
     method: "get",
   });
 }
-//新增菜单
-export async function addMenuApi(data) {
+//新增二级菜单
+export async function addChildMenuApi(data) {
   return request({
-    url: "/api/AddMenu",
+    url: "/api/AddChildMenu",
     method: "post",
     data,
   });

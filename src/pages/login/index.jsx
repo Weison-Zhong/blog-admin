@@ -10,11 +10,10 @@ export default function Login() {
   const history = useHistory();
   const onFinish = async (values) => {
     const res = await loginApi(values);
-    console.log({ res });
+    console.log("login res-->", res);
     const { data } = res;
     if (!data) return message.error("Token值有误，请联系管理员");
     const { token, menuList } = data || {};
-    console.log({data});
     localStorage.setItem("WeisonToken", token);
     dispatch({
       type: UPDATE_USERINFO,

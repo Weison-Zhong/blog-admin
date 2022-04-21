@@ -8,6 +8,7 @@ import {
   getApisApi,
   getMenusApi,
 } from "../../axios/api";
+import { getFlattenChildrenMenuList } from "@/utils/tools";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 const { Item } = Form;
@@ -117,7 +118,8 @@ export default function ApiList() {
     const res = await getMenusApi();
     const { code, data } = res || {};
     if (code !== 200) return;
-    setMenuList(data);
+    const flattenChildMenus = getFlattenChildrenMenuList(data);
+    setMenuList(flattenChildMenus);
   }
   //新增或修改API
   const handleSubmit = async (newApi) => {
@@ -178,7 +180,9 @@ export default function ApiList() {
         updatingObj={updatingApi}
         setUpdatingObj={setUpdatingApi}
         submitBtnCallBack={handleSubmit}
-        initialValues={{ menuId: updatingApi.menu && updatingApi.menu.menuId }}
+        initialValues={{
+          menuId: updatingApi.belongMenu && updatingApi.belongMenu.menuId,
+        }}
       >
         <Item name="title" label="Api名" rules={[{ required: true }]}>
           <Input allowClear={true} />

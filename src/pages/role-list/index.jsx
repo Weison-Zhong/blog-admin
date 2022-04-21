@@ -9,11 +9,12 @@ import {
   updateRoleApi,
   addRoleApi,
   deleteRoleApi,
-  getMenuPermissionListApi,
+  getUserMenusApi,
   updatePermissionForRoleApi,
   getMenusApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
+import { getFlattenChildrenMenuList } from "@/utils/tools";
 import {
   FormOutlined,
   DeleteOutlined,
@@ -22,9 +23,7 @@ import {
 } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 const { Item } = Form;
-let menuTreeData = [];
 let flattenPermissions = [];
-let flattenMenus = [];
 const formConfig = {
   width: 420,
   layout: {
@@ -129,7 +128,15 @@ export default function RoleList() {
     setIsShowPermissionDrawer(false);
     setUpdatingRole({});
   };
-
+  const updateUserMenusList = async () => {
+    const res = await getUserMenusApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    dispatch({
+      type: UPDATE_MENUS,
+      payload: data,
+    });
+  };
   const fetchRoles = async () => {
     const res = await getRolesApi();
     const { code, data } = res || {};
@@ -157,6 +164,7 @@ export default function RoleList() {
     const { code, msg } = res;
     if (code !== 200) return;
     fetchRoles();
+    updateUserMenusList();
     setIsShowPermissionDrawer(false);
     message.success(msg);
   };
@@ -206,14 +214,13 @@ export default function RoleList() {
     setDeletingRole({});
     fetchRoles();
   };
+  //请求菜单列表，从结果中构造出权限树需要的数据结构
   const fetchMenus = async () => {
     const res = await getMenusApi();
     console.log("menus --->", res);
     const { data, code } = res || {};
     if (code !== 200) return;
-    const childrenArr = data.map((item) => item.children);
-    const flattenChildMenus = [];
-    childrenArr.forEach((item) => flattenChildMenus.push(...item));
+    const flattenChildMenus = getFlattenChildrenMenuList(data);
     const treeData = [];
     flattenChildMenus.forEach((item) => {
       const { key, name, apis } = item;
@@ -225,10 +232,8 @@ export default function RoleList() {
     });
     setPermissionTreeData(treeData);
     flattenPermissions = getFlattenArray(treeData);
-    console.log({ flattenPermissions });
   };
   useEffect(() => {
-    // fetchMenuPermissionList();
     fetchRoles();
     fetchMenus();
   }, []);

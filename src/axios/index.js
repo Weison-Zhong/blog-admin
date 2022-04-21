@@ -59,9 +59,12 @@ http.interceptors.response.use(
       case 405:
         message.error("接口报 405 请求方法不被允许");
         break;
+      case 500:
+        message.error("接口报 500 错误请求，请查看控制台");
+        break;
       default:
         message.error(statusText);
-        message.error(data);
+        // message.error(data);
         break;
     }
     return data;

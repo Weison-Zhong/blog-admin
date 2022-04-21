@@ -9,7 +9,6 @@ import {
   updateRoleApi,
   addRoleApi,
   deleteRoleApi,
-  getMenuPermissionListApi,
   updatePermissionForRoleApi,
   updateMenuForRoleApi,
   getUserMenusApi,
@@ -154,20 +153,20 @@ export default function RoleList() {
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
-  const fetchMenuPermissionList = async () => {
-    const res = await getMenuPermissionListApi();
-    const { code, data } = res || {};
-    if (code !== 200) return;
-    const { permissionList, menuList } = data || {};
-    if (isArray(permissionList)) {
-      permissionTreeData = permissionList;
-      flattenPermissions = getFlattenArray(permissionList);
-    }
-    if (isArray(menuList)) {
-      menuTreeData = menuList;
-      flattenMenus = getFlattenArray(menuList);
-    }
-  };
+  // const fetchMenuPermissionList = async () => {
+  //   const res = await getMenuPermissionListApi();
+  //   const { code, data } = res || {};
+  //   if (code !== 200) return;
+  //   const { permissionList, menuList } = data || {};
+  //   if (isArray(permissionList)) {
+  //     permissionTreeData = permissionList;
+  //     flattenPermissions = getFlattenArray(permissionList);
+  //   }
+  //   if (isArray(menuList)) {
+  //     menuTreeData = menuList;
+  //     flattenMenus = getFlattenArray(menuList);
+  //   }
+  // };
   const handleUpdateRolePermission = async () => {
     setIsSubmitting(true);
     const apiIds = [];
@@ -274,7 +273,7 @@ export default function RoleList() {
     fetchRoles();
   };
   useEffect(() => {
-    fetchMenuPermissionList();
+    // fetchMenuPermissionList();
     fetchRoles();
   }, []);
   return (
