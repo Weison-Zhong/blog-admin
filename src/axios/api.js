@@ -284,3 +284,10 @@ export async function updateProjectApi(projectId, data) {
     },
   });
 }
+//查询Icon列表
+export async function getIconsApi() {
+  return request({
+    url: "/api/GetIcons",
+    method: "get",
+  });
+}

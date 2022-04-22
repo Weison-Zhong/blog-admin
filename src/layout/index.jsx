@@ -132,7 +132,7 @@ export default function Home() {
       <Header className="header">
         <div className="left">
           <div className="logo"></div>
-          <h5>博客后台管理系统</h5>
+          <h5>a</h5>
         </div>
         <Dropdown overlay={menu} trigger={["click"]}>
           <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
