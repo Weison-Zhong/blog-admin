@@ -291,3 +291,26 @@ export async function getIconsApi() {
     method: "get",
   });
 }
+//删除Icon
+export async function deleteIconApi(id) {
+  return request({
+    url: `/api/DeleteIcon/${id}`,
+    method: "delete",
+  });
+}
+//修改Icon信息
+export async function updateIconApi(id, data) {
+  return request({
+    url: `/api/updateIcon/${id}`,
+    method: "put",
+    data,
+  });
+}
+//新增Icon
+export async function addIconApi(data) {
+  return request({
+    url: "/api/addIcon",
+    method: "post",
+    data,
+  });
+}
