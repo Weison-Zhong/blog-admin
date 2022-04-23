@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   getMenusApi,
-  addChildMenuApi,
+  addMenuApi,
   updateMenuApi,
   deleteMenuApi,
   getIconsApi,
@@ -64,7 +64,7 @@ export default function MenuList() {
         const { name, icon } = row || {};
         return (
           <li>
-            <i className={`iconfont ${icon}`}></i>
+            <i className={`iconfont ${icon.key}`}></i>
             <span style={{ marginLeft: "5px" }}>{name}</span>
           </li>
         );
@@ -155,18 +155,20 @@ export default function MenuList() {
     fetchIcons();
   }, []);
   const handleSubmit = async (data) => {
-    data.keepAlive = Number(data.keepAlive);
+    console.log({ data });
+    if(typeof (data.keepAlive) === 'boolean'){
+      data.keepAlive = Number(data.keepAlive)
+    }
     setIsSubmitting(true);
     const { id, parentMenuId } = updatingMenu;
     parentMenuId && (data.parentMenuId = parentMenuId);
     let res = null;
     if (id) {
       //修改
-      data.id = id;
-      res = await updateMenuApi(data);
+      res = await updateMenuApi(id, data);
     } else {
       //新增
-      res = await addChildMenuApi(data);
+      res = await addMenuApi(data);
     }
     setIsSubmitting(false);
     const { code, msg } = res || {};
@@ -202,7 +204,10 @@ export default function MenuList() {
         updatingObj={updatingMenu}
         setUpdatingObj={setUpdatingMenu}
         submitBtnCallBack={handleSubmit}
-        initialValues={{ weight: 0 }}
+        initialValues={{
+          weight: 0,
+          iconId: updatingMenu.icon && updatingMenu.icon.id,
+        }}
       >
         <Item name="name" label="菜单名" rules={[{ required: true }]}>
           <Input allowClear={true} />
@@ -211,32 +216,43 @@ export default function MenuList() {
           <Input allowClear={true} />
         </Item>
         {updatingMenu.parentMenuId ? (
-          <Item
-            name="componentPath"
-            label="组件目录"
-            rules={[{ required: true }]}
-          >
-            <Input allowClear={true} />
-          </Item>
+          <>
+            <Item
+              name="componentPath"
+              label="组件目录"
+              rules={[{ required: true }]}
+            >
+              <Input allowClear={true} />
+            </Item>
+            <Item
+              label="是否缓存"
+              name="keepAlive"
+              rules={[{ required: true }]}
+              valuePropName="checked"
+              initialValue={false}
+            >
+              <Switch />
+            </Item>
+          </>
         ) : null}
-        <Item name="icon" label="图标" rules={[{ required: true }]}>
+        <Item name="iconId" label="图标" rules={[{ required: true }]}>
           <Select
             style={{ width: 220 }}
             placeholder="请选择图标"
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => {
-              const children = option.children.toString();
-              console.log({option});
-              if (typeof children === "undefined") {
-                return null;
-              } else {
-                return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-            }}
+            // showSearch
+            // optionFilterProp="label"
+            // filterOption={(input, option) => {
+            //   const children = option.children.toString();
+            //   console.log({ option });
+            //   if (typeof children === "undefined") {
+            //     return null;
+            //   } else {
+            //     return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+            //   }
+            // }}
           >
             {icons.map((item) => (
-              <Option key={item.key}>
+              <Option key={item.id} >
                 <li>
                   <i className={`iconfont ${item.key}`}></i>
                   <span style={{ marginLeft: "5px" }}>{item.name}</span>
@@ -247,15 +263,6 @@ export default function MenuList() {
         </Item>
         <Item name="weight" label="权重" rules={[{ required: true }]}>
           <InputNumber min={0} />
-        </Item>
-        <Item
-          label="是否缓存"
-          name="keepAlive"
-          rules={[{ required: true }]}
-          valuePropName="checked"
-          initialValue={false}
-        >
-          <Switch />
         </Item>
       </FormModal>
       <DeleteModal

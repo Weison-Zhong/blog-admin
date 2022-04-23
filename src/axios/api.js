@@ -195,18 +195,17 @@ export async function getMenusApi() {
   });
 }
 //新增二级菜单
-export async function addChildMenuApi(data) {
+export async function addMenuApi(data) {
   return request({
-    url: "/api/AddChildMenu",
+    url: "/api/AddMenu",
     method: "post",
     data,
   });
 }
 //修改菜单
-export async function updateMenuApi(data) {
-  const { id } = data || {};
+export async function updateMenuApi(id,data) {
   return request({
-    url: `/api/UpdateChildMenu/${id}`,
+    url: `/api/UpdateMenu/${id}`,
     method: "put",
     data,
   });

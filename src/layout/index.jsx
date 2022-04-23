@@ -104,7 +104,7 @@ export default function Home() {
   const [collapsed, setCollapsed] = useState(false);
   const { pathname } = useLocation();
   // let menus = useSelector((state) => state.global.menus) || [];
-  console.log({ menus });
+  // console.log({ menus });
   const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);
   let defaultSelectedKeys = ["system/status"]; //默认展示欢迎页
   let defaultOpenKeys = ["system"];
