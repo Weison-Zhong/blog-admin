@@ -206,7 +206,7 @@ export async function addChildMenuApi(data) {
 export async function updateMenuApi(data) {
   const { id } = data || {};
   return request({
-    url: `/api/UpdateMenu/${id}`,
+    url: `/api/UpdateChildMenu/${id}`,
     method: "put",
     data,
   });
@@ -312,5 +312,50 @@ export async function addIconApi(data) {
     url: "/api/addIcon",
     method: "post",
     data,
+  });
+}
+//查询博客配置信息
+export async function getBlogConfigApi() {
+  return request({
+    url: "/api/GetBlogConfig",
+    method: "get",
+  });
+}
+//修改博客配置信息
+export async function updateBlogConfigApi(data) {
+  return request({
+    url: "/api/updateBlogConfig",
+    method: "put",
+    data,
+  });
+}
+//新增Icon
+export async function addDemoApi(data) {
+  return request({
+    url: "/api/addDemo",
+    method: "post",
+    data,
+  });
+}
+//删除单个菜单
+export async function deleteDemoApi(id) {
+  return request({
+    url: `/api/DeleteDemo/${id}`,
+    method: "delete",
+  });
+}
+//修改Demo信息
+export async function updateDemoApi(id, data) {
+  return request({
+    url: `/api/updateDemo/${id}`,
+    method: "put",
+    data,
+  });
+}
+//查询Demo列表
+export async function getDemosApi() {
+  return request({
+    url: "/api/GetDemos",
+    method: "get",
   });
 }

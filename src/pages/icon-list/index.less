@@ -1,9 +1,12 @@
 .icon-list {
   ul {
+    margin-top: 10px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
+    height: calc(100vh - 110px);
+    overflow: auto;
     li {
       flex: 0 0 auto;
       display: flex;
@@ -14,6 +17,7 @@
       margin: 8px;
       position: relative;
       width: 125px;
+      height: 135px;
       span {
         color: #666;
         word-break: break-all;

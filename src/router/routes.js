@@ -105,6 +105,13 @@ const routes = [
         icon: <UserOutlined />,
         keepAlive: false,
       },
+      {
+        name: "Demo列表",
+        key: "blog/demo",
+        componentPath: "demo-list",
+        icon: <KeyOutlined />,
+        keepAlive: false,
+      },
     ],
   },
 ];

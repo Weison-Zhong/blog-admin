@@ -4,8 +4,19 @@ import {
   addChildMenuApi,
   updateMenuApi,
   deleteMenuApi,
+  getIconsApi,
 } from "@/axios/api";
-import { Table, Button, Form, Input, message } from "antd";
+import "./index.less";
+import {
+  Table,
+  Button,
+  Form,
+  Input,
+  message,
+  Select,
+  Switch,
+  InputNumber,
+} from "antd";
 import {
   PlusCircleOutlined,
   FormOutlined,
@@ -15,7 +26,7 @@ import {
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 const { Item } = Form;
-
+const { Option } = Select;
 const formConfig = {
   width: 500,
   layout: {
@@ -29,18 +40,43 @@ const formConfig = {
 const expandable = {
   defaultExpandAllRows: true,
   expandRowByClick: true,
+  // expandIcon: ({ expanded, onExpand, record }) =>
+  //   expanded ? (
+  //     <RightOutlined onClick={(e) => onExpand(record, e)} />
+  //   ) : (
+  //     <DownOutlined onClick={(e) => onExpand(record, e)} />
+  //   ),
 };
 export default function MenuList() {
   const [menus, setMenus] = useState([]);
   const [isShowModal, setIsShowModal] = useState(false);
   const [deletingMenu, setDeletingMenu] = useState({});
   const [updatingMenu, setUpdatingMenu] = useState({});
+  const [icons, setIcons] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const columns = [
-    { title: "名称", dataIndex: "name", key: "name" },
-    { title: "图标", dataIndex: "icon", key: "icon" },
-    { title: "路径", dataIndex: "key", key: "key" },
-    { title: "组件目录", dataIndex: "componentPath", key: "componentPath" },
+    {
+      title: "名称",
+      dataIndex: "name",
+      key: "name",
+      width: 200,
+      render: (_, row) => {
+        const { name, icon } = row || {};
+        return (
+          <li>
+            <i className={`iconfont ${icon}`}></i>
+            <span style={{ marginLeft: "5px" }}>{name}</span>
+          </li>
+        );
+      },
+    },
+    { title: "路径", align: "center", dataIndex: "key", key: "key" },
+    {
+      title: "组件目录",
+      align: "center",
+      dataIndex: "componentPath",
+      key: "componentPath",
+    },
     {
       title: "操作",
       key: "operation",
@@ -100,17 +136,26 @@ export default function MenuList() {
       setDeletingMenu({});
     }
   };
+  const fetchIcons = async () => {
+    const res = await getIconsApi();
+    const { code, data } = res || {};
+    console.log("icons-->", data);
+    if (code !== 200) message.error("获取Icon图标失败，请刷新重试");
+    setIcons(data);
+  };
   const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
     console.log("menus-->", data);
-    if (code !== 200) return;
+    if (code !== 200) return message.error("获取菜单列表失败，请刷新重试");
     setMenus(data);
   };
   useEffect(() => {
     fetchMenus();
+    fetchIcons();
   }, []);
   const handleSubmit = async (data) => {
+    data.keepAlive = Number(data.keepAlive);
     setIsSubmitting(true);
     const { id, parentMenuId } = updatingMenu;
     parentMenuId && (data.parentMenuId = parentMenuId);
@@ -132,7 +177,7 @@ export default function MenuList() {
     }
   };
   return (
-    <>
+    <div className="menu-list">
       <Button
         type="primary"
         icon={<PlusCircleOutlined />}
@@ -142,7 +187,12 @@ export default function MenuList() {
       >
         新增一级菜单
       </Button>
-      <Table columns={columns} dataSource={menus} expandable={expandable} />
+      <Table
+        columns={columns}
+        dataSource={menus}
+        expandable={expandable}
+        key={menus[0] && menus[0].id} //防止全部自动展开失败，因为defaultExpandAllRows只在首次渲染生效
+      />
       <FormModal
         isShowModal={isShowModal}
         setIsShowModal={setIsShowModal}
@@ -152,6 +202,7 @@ export default function MenuList() {
         updatingObj={updatingMenu}
         setUpdatingObj={setUpdatingMenu}
         submitBtnCallBack={handleSubmit}
+        initialValues={{ weight: 0 }}
       >
         <Item name="name" label="菜单名" rules={[{ required: true }]}>
           <Input allowClear={true} />
@@ -169,10 +220,42 @@ export default function MenuList() {
           </Item>
         ) : null}
         <Item name="icon" label="图标" rules={[{ required: true }]}>
-          <Input allowClear={true} />
+          <Select
+            style={{ width: 220 }}
+            placeholder="请选择图标"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) => {
+              const children = option.children.toString();
+              console.log({option});
+              if (typeof children === "undefined") {
+                return null;
+              } else {
+                return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              }
+            }}
+          >
+            {icons.map((item) => (
+              <Option key={item.key}>
+                <li>
+                  <i className={`iconfont ${item.key}`}></i>
+                  <span style={{ marginLeft: "5px" }}>{item.name}</span>
+                </li>
+              </Option>
+            ))}
+          </Select>
         </Item>
-        <Item name="keepAlive" label="是否缓存" rules={[{ required: true }]}>
-          <Input allowClear={true} />
+        <Item name="weight" label="权重" rules={[{ required: true }]}>
+          <InputNumber min={0} />
+        </Item>
+        <Item
+          label="是否缓存"
+          name="keepAlive"
+          rules={[{ required: true }]}
+          valuePropName="checked"
+          initialValue={false}
+        >
+          <Switch />
         </Item>
       </FormModal>
       <DeleteModal
@@ -180,6 +263,6 @@ export default function MenuList() {
         setDeletingObj={setDeletingMenu}
         onDelete={handleDeleteMenu}
       />
-    </>
+    </div>
   );
 }
