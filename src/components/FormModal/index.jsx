@@ -4,7 +4,6 @@ import { LoadingOutlined } from "@ant-design/icons";
 const { Item } = Form;
 
 export default function FormModal(props) {
-  const form = Form.useForm()[0];
   const formRef = useRef();
   const {
     isShowModal,
@@ -23,7 +22,7 @@ export default function FormModal(props) {
     setUpdatingObj({});
     resetFormData();
   };
-  const resetFormData = () => form.resetFields();
+  const resetFormData = () => formRef.current && formRef.current.resetFields();
   useEffect(() => {
     setTimeout(() => {
       formRef.current && formRef.current.setFieldsValue(updatingObj);
@@ -43,7 +42,6 @@ export default function FormModal(props) {
     >
       <Form
         {...layout}
-        form={form}
         ref={formRef}
         initialValues={initialValues}
         onFinish={submitBtnCallBack}

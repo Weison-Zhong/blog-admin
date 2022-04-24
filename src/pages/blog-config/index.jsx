@@ -1,11 +1,7 @@
 import React, { Component } from "react";
 import "./index.less";
-import { Button, Popconfirm, message, Modal, Form, Input } from "antd";
-import {
-  FormOutlined,
-  DeleteOutlined,
-  LoadingOutlined,
-} from "@ant-design/icons";
+import { Button, message, Form, Input } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import { getBlogConfigApi, updateBlogConfigApi } from "@/axios/api";
 const { Item } = Form;
 const layout = {

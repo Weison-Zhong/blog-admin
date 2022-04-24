@@ -32,7 +32,7 @@ export default class ArticleList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      articleList:[],
+      articleList: [],
       articleTypes: [],
       loading: false,
       deletingArticle: {},
@@ -44,16 +44,18 @@ export default class ArticleList extends Component {
     this.fetchArticleList();
     this.fetchArticleTypes();
   }
-  onSortEnd = ({ oldIndex, newIndex }) => {
-    const { dataSource } = this.state;
+  onSortEnd = (data) => {
+    const { oldIndex, newIndex } = data;
+    console.log({ data });
+    const { articleList } = this.state;
     if (oldIndex !== newIndex) {
       const newData = arrayMoveImmutable(
-        [].concat(dataSource),
+        [].concat(articleList),
         oldIndex,
         newIndex
       ).filter((el) => !!el);
       console.log("Sorted items: ", newData);
-      this.setState({ dataSource: newData });
+      this.setState({ articleList: newData });
     }
   };
 
@@ -69,7 +71,6 @@ export default class ArticleList extends Component {
 
   DraggableBodyRow = ({ className, style, ...restProps }) => {
     const { articleList } = this.state;
-    // function findIndex base on Table rowKey props and should always be a right array index
     const index = articleList.findIndex(
       (x) => x.index === restProps["data-row-key"]
     );
@@ -83,10 +84,8 @@ export default class ArticleList extends Component {
       // status: "",
     };
     const res = await getArticlesApi(params);
-    console.log("articles -->", res);
     const { code, data } = res || {};
     if (code !== 200) return;
-    console.log({ data });
     const { articles } = data || {};
     if (isArray(articles)) {
       articles.forEach((item, i) => (item.index = i + 1));
@@ -95,7 +94,6 @@ export default class ArticleList extends Component {
   };
   fetchArticleTypes = async () => {
     const res = await getArticleTypesApi();
-    console.log({ res });
     const { data } = res;
     if (typeof data === "undefined") return;
     this.setState({
@@ -132,6 +130,7 @@ export default class ArticleList extends Component {
   setDeletingArticle = (deletingArticle) => {
     this.setState({ deletingArticle });
   };
+  //标题关键字搜索代码段 bigin
   getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({
       setSelectedKeys,
@@ -214,6 +213,7 @@ export default class ArticleList extends Component {
       searchText: "",
     });
   };
+  //标题关键字搜索代码段 end
   render() {
     const { articleList, loading, deletingArticle, articleTypes } = this.state;
     const columns = [

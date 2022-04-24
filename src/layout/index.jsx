@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   Switch,
@@ -10,11 +10,12 @@ import {
 } from "react-router-dom";
 import loadable from "@loadable/component";
 import { isArray } from "../utils/is";
+import { loadCSS } from "../utils/tools";
 import "./index.less";
 import menus from "../router/routes";
 import KeepAlive, { AliveScope } from "react-activation";
-import { Layout, Dropdown } from "antd";
-import { Menu, Button } from "antd";
+import { Layout, Dropdown, Menu, Button } from "antd";
+import { getBlogConfigApi } from "@/axios/api";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -127,6 +128,16 @@ export default function Home() {
       </Menu.Item>
     </Menu>
   );
+  const fetchBlogConfig = async () => {
+    const res = await getBlogConfigApi();
+    const { data, code } = res;
+    if (code !== 200) return;
+    const { iconLink } = data || {};
+    iconLink && loadCSS(iconLink); //请求接口获取iconfont链接并引入
+  };
+  useEffect(() => {
+    fetchBlogConfig();
+  }, []);
   return (
     <Layout className="page-layout">
       <Header className="header">

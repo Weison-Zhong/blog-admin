@@ -147,7 +147,7 @@ export default function MenuList() {
     const res = await getMenusApi();
     const { code, data } = res;
     console.log("menus-->", data);
-    if (code !== 200) return message.error("获取菜单列表失败，请刷新重试");
+    if (code !== 200) return;
     setMenus(data);
   };
   useEffect(() => {
@@ -156,8 +156,8 @@ export default function MenuList() {
   }, []);
   const handleSubmit = async (data) => {
     console.log({ data });
-    if(typeof (data.keepAlive) === 'boolean'){
-      data.keepAlive = Number(data.keepAlive)
+    if (typeof data.keepAlive === "boolean") {
+      data.keepAlive = Number(data.keepAlive);
     }
     setIsSubmitting(true);
     const { id, parentMenuId } = updatingMenu;
@@ -252,7 +252,7 @@ export default function MenuList() {
             // }}
           >
             {icons.map((item) => (
-              <Option key={item.id} >
+              <Option key={item.id}>
                 <li>
                   <i className={`iconfont ${item.key}`}></i>
                   <span style={{ marginLeft: "5px" }}>{item.name}</span>

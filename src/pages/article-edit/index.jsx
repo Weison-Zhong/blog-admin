@@ -30,7 +30,6 @@ const { Option } = Select;
 let imgFile = null;
 export default function ArticleEdit() {
   const formRef = React.createRef();
-  const [form] = Form.useForm();
   const [articleContent, setArticleContent] = useState("");
   const [articleTypes, setArticleTypes] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
@@ -111,12 +110,7 @@ export default function ArticleEdit() {
   }, [updatingArticle]);
   return (
     <div className="article-edit">
-      <Form
-        form={form}
-        ref={formRef}
-        className="form"
-        initialValues={{ weight: 0 }}
-      >
+      <Form ref={formRef} className="form" initialValues={{ weight: 0 }}>
         <Row gutter={2}>
           <Col span={16}>
             <Item name="title" label="标题" rules={[{ required: true }]}>

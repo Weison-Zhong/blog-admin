@@ -25,7 +25,7 @@ const routes = [
         name: "运行监测",
         key: "system/status",
         componentPath: "system-status",
-        icon: <ContainerOutlined />,
+        icon: "icon-wechat-fill",
         keepAlive: false,
       },
       {

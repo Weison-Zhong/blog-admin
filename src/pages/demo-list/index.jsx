@@ -1,5 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Button, Table, Form, Input, message, InputNumber, Switch } from "antd";
+import {
+  Button,
+  Table,
+  Form,
+  Input,
+  message,
+  InputNumber,
+  Switch,
+  Select,
+  Tag,
+} from "antd";
 import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   addDemoApi,
@@ -7,12 +17,14 @@ import {
   updateDemoApi,
   getDemosApi,
   toggleDemoStatusApi,
+  getIconsApi,
 } from "@/axios/api";
 import "./index.less";
 import ImgUpload from "@/components/ImgUpload";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 const { Item } = Form;
+const { Option } = Select;
 const formConfig = {
   width: 550,
   layout: {
@@ -31,6 +43,7 @@ export default function DemoList() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingDemo, setDeletingDemo] = useState({});
   const [demoList, setDemoList] = useState([]);
+  const [icons, setIcons] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
   const columns = [
     {
@@ -124,9 +137,15 @@ export default function DemoList() {
     data.forEach((item, i) => (item.index = i + 1));
     setDemoList(data);
   }
-
+  async function fetchIcons() {
+    const res = await getIconsApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    setIcons(data);
+  }
   //新增或修改Demo
   const handleSubmit = async (newDemo) => {
+    console.log({ newDemo });
     setIsSubmitting(true);
     try {
       const { id } = updatingDemo || {};
@@ -172,6 +191,7 @@ export default function DemoList() {
   //初始化
   useEffect(() => {
     fetchDemos();
+    fetchIcons();
   }, []);
 
   return (
@@ -193,6 +213,7 @@ export default function DemoList() {
         submitBtnCallBack={handleSubmit}
         initialValues={{
           menuId: updatingDemo.belongMenu && updatingDemo.belongMenu.menuId,
+          idconIds: updatingDemo.iconIds,
         }}
       >
         <Item name="title" label="Api名" rules={[{ required: true }]}>
@@ -213,6 +234,25 @@ export default function DemoList() {
         >
           <Switch checkedChildren="上架" unCheckedChildren="隐藏" />
         </Item>
+        <Item label="Icon图标" name="idconIds" rules={[{ required: true }]}>
+          <Select
+            placeholder="请选择图标墙"
+            mode="multiple"
+            showArrow
+            tagRender={tagRender}
+            style={{ width: "100%" }}
+            showSearch={false}
+          >
+            {icons.map((item) => (
+              <Option key={item.id}>
+                <li>
+                  <i className={`iconfont ${item.key}`}></i>
+                  <span style={{ marginLeft: "5px" }}>{item.name}</span>
+                </li>
+              </Option>
+            ))}
+          </Select>
+        </Item>
         <Item label="封面图" className="cover-img-upload">
           <ImgUpload
             imageUrl={imageUrl}
@@ -229,5 +269,24 @@ export default function DemoList() {
         onDelete={handleDeleteDemo}
       />
     </div>
+  );
+}
+
+function tagRender(props) {
+  const { label, closable, onClose } = props;
+  const onPreventMouseDown = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  return (
+    <Tag
+      className="demo-tag-icon"
+      onMouseDown={onPreventMouseDown}
+      closable={closable}
+      onClose={onClose}
+      style={{ marginRight: 3 }}
+    >
+      {label}
+    </Tag>
   );
 }
