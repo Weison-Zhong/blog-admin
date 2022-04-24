@@ -6,6 +6,7 @@ import {
   deleteDemoApi,
   updateDemoApi,
   getDemosApi,
+  toggleDemoStatusApi,
 } from "@/axios/api";
 import "./index.less";
 import ImgUpload from "@/components/ImgUpload";
@@ -105,20 +106,18 @@ export default function DemoList() {
     setImageUrl(row.coverImgUrl);
     setIsShowModal(true);
   }
-  function handleToggleStatusClick(row) {
+  async function handleToggleStatusClick(row) {
     setLoading(true);
-    // const res = await toggleArticleStatusApi(row.id);
-    // const { code, msg } = res || {};
-    // if (code === 200) {
-    //   message.success(msg);
-    //   this.fetchArticleList();
-    // }
+    const res = await toggleDemoStatusApi(row.id);
+    const { code, msg } = res || {};
+    if (code === 200) {
+      message.success(msg);
+      fetchDemos();
+    }
     setLoading(false);
   }
   async function fetchDemos() {
     const res = await getDemosApi();
-    //若axios没有加全局拦截器，那么走不到这里，控制台会报Uncaught (in promise) Error错误，但是如果上面await那里加了catch则可以继续执行，res是undefined;
-    //若axios的interceptors.response.use()第二个参数有处理，则返回我们return的东西。
     const { code, data } = res || {};
     console.log({ res });
     if (code !== 200) return;
@@ -199,7 +198,7 @@ export default function DemoList() {
         <Item name="title" label="Api名" rules={[{ required: true }]}>
           <Input allowClear={true} />
         </Item>
-        <Item name="description" label="说明" rules={[{ required: false }]}>
+        <Item name="description" label="描述" rules={[{ required: true }]}>
           <Input.TextArea allowClear={true} />
         </Item>
         <Item name="weight" label="权重" rules={[{ required: true }]}>
@@ -208,7 +207,7 @@ export default function DemoList() {
         <Item
           label="状态"
           name="status"
-          rules={[{ required: false }]}
+          rules={[{ required: true }]}
           valuePropName="checked"
           initialValue={true}
         >

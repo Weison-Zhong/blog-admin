@@ -203,7 +203,7 @@ export async function addMenuApi(data) {
   });
 }
 //修改菜单
-export async function updateMenuApi(id,data) {
+export async function updateMenuApi(id, data) {
   return request({
     url: `/api/UpdateMenu/${id}`,
     method: "put",
@@ -356,5 +356,12 @@ export async function getDemosApi() {
   return request({
     url: "/api/GetDemos",
     method: "get",
+  });
+}
+//修改Demo展示状态
+export async function toggleDemoStatusApi(id) {
+  return request({
+    url: `/api/toggleDemoStatus/${id}`,
+    method: "put",
   });
 }

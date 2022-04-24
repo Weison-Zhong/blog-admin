@@ -1,6 +1,6 @@
 import axios from "axios";
 import { message } from "antd";
-
+import { isArray } from "@/utils/is";
 const http = axios.create({
   baseURL: "",
   timeout: 30000,
@@ -54,7 +54,11 @@ http.interceptors.response.use(
         message.error("接口报 404 资源Not Found！");
         break;
       case 422:
-        message.error("接口报 422 错误请求，请查看控制台");
+        message.error("接口报 422 错误请求，详情请查看控制台");
+        const { Content } = data.errors || {};
+        if (isArray(Content)) {
+          Content.forEach((item) => message.error(item));
+        }
         break;
       case 405:
         message.error("接口报 405 请求方法不被允许");
