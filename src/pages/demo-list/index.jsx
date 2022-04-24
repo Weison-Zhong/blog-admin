@@ -19,6 +19,7 @@ import {
   toggleDemoStatusApi,
   getIconsApi,
 } from "@/axios/api";
+import { isArray } from "@/utils/is";
 import "./index.less";
 import ImgUpload from "@/components/ImgUpload";
 import FormModal from "@/components/FormModal";
@@ -154,7 +155,10 @@ export default function DemoList() {
       const demoForm = new FormData();
       //遍历antd表单数据插入formdata
       for (let key in newDemo) {
-        demoForm.append(key, newDemo[key]);
+        const val = newDemo[key];
+        if (isArray(val)) {
+          val.forEach((item) => demoForm.append(`${key}[]`, item));
+        } else demoForm.append(key, newDemo[key]);
       }
       demoForm.append("coverImage", imgFile);
       let res = null;
@@ -213,7 +217,8 @@ export default function DemoList() {
         submitBtnCallBack={handleSubmit}
         initialValues={{
           menuId: updatingDemo.belongMenu && updatingDemo.belongMenu.menuId,
-          idconIds: updatingDemo.iconIds,
+          iconIds:
+            updatingDemo.icons && updatingDemo.icons.map((item) => item.id),
         }}
       >
         <Item name="title" label="Api名" rules={[{ required: true }]}>
@@ -234,12 +239,12 @@ export default function DemoList() {
         >
           <Switch checkedChildren="上架" unCheckedChildren="隐藏" />
         </Item>
-        <Item label="Icon图标" name="idconIds" rules={[{ required: true }]}>
+        <Item label="Icon图标" name="iconIds" rules={[{ required: true }]}>
           <Select
             placeholder="请选择图标墙"
             mode="multiple"
             showArrow
-            tagRender={tagRender}
+            tagRender={TagRender}
             style={{ width: "100%" }}
             showSearch={false}
           >
@@ -272,7 +277,7 @@ export default function DemoList() {
   );
 }
 
-function tagRender(props) {
+function TagRender(props) {
   const { label, closable, onClose } = props;
   const onPreventMouseDown = (event) => {
     event.preventDefault();
