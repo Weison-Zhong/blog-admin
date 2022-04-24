@@ -10,17 +10,30 @@ import Highlighter from "react-highlight-words";
 import {
   getArticlesApi,
   toggleArticleStatusApi,
+  getArticleTypesApi,
   deleteArticleApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
 import DeleteModal from "@/components/DeleteModal";
+import {
+  SortableContainer,
+  SortableElement,
+  SortableHandle,
+} from "react-sortable-hoc";
+import { MenuOutlined } from "@ant-design/icons";
+import { arrayMoveImmutable } from "array-move";
 let searchInput = null;
-
+const DragHandle = SortableHandle(() => (
+  <MenuOutlined style={{ cursor: "grab", color: "#999" }} />
+));
+const SortableItem = SortableElement((props) => <tr {...props} />);
+const SortableBody = SortableContainer((props) => <tbody {...props} />);
 export default class ArticleList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      articleList: [],
+      articleList:[],
+      articleTypes: [],
       loading: false,
       deletingArticle: {},
       searchText: "",
@@ -29,9 +42,48 @@ export default class ArticleList extends Component {
   }
   componentDidMount() {
     this.fetchArticleList();
+    this.fetchArticleTypes();
   }
+  onSortEnd = ({ oldIndex, newIndex }) => {
+    const { dataSource } = this.state;
+    if (oldIndex !== newIndex) {
+      const newData = arrayMoveImmutable(
+        [].concat(dataSource),
+        oldIndex,
+        newIndex
+      ).filter((el) => !!el);
+      console.log("Sorted items: ", newData);
+      this.setState({ dataSource: newData });
+    }
+  };
+
+  DraggableContainer = (props) => (
+    <SortableBody
+      useDragHandle
+      disableAutoscroll
+      helperClass="row-dragging"
+      onSortEnd={this.onSortEnd}
+      {...props}
+    />
+  );
+
+  DraggableBodyRow = ({ className, style, ...restProps }) => {
+    const { articleList } = this.state;
+    // function findIndex base on Table rowKey props and should always be a right array index
+    const index = articleList.findIndex(
+      (x) => x.index === restProps["data-row-key"]
+    );
+    return <SortableItem index={index} {...restProps} />;
+  };
   fetchArticleList = async () => {
-    const res = await getArticlesApi();
+    const params = {
+      PageNumber: 1,
+      PageSize: 999,
+      // ArticleType: "",
+      // status: "",
+    };
+    const res = await getArticlesApi(params);
+    console.log("articles -->", res);
     const { code, data } = res || {};
     if (code !== 200) return;
     console.log({ data });
@@ -40,6 +92,15 @@ export default class ArticleList extends Component {
       articles.forEach((item, i) => (item.index = i + 1));
       this.setState({ articleList: articles });
     }
+  };
+  fetchArticleTypes = async () => {
+    const res = await getArticleTypesApi();
+    console.log({ res });
+    const { data } = res;
+    if (typeof data === "undefined") return;
+    this.setState({
+      articleTypes: data,
+    });
   };
   handleEditArticleClick = (row) => {
     this.props.history.push(`/article/edit?articleId=${row.id}`);
@@ -154,10 +215,17 @@ export default class ArticleList extends Component {
     });
   };
   render() {
-    const { articleList, loading, deletingArticle } = this.state;
+    const { articleList, loading, deletingArticle, articleTypes } = this.state;
     const columns = [
       {
-        title: "序号",
+        title: "Sort",
+        dataIndex: "sort",
+        width: 70,
+        className: "drag-visible",
+        render: () => <DragHandle />,
+      },
+      {
+        title: "排序",
         width: 80,
         dataIndex: "index",
         align: "center",
@@ -168,10 +236,10 @@ export default class ArticleList extends Component {
         key: "articleType",
         width: 120,
         align: "center",
-        filters: articleList.map((item) => {
+        filters: articleTypes.map((item) => {
           return {
-            text: item.articleType,
-            value: item.articleType,
+            text: item,
+            value: item,
           };
         }),
         filterSearch: true,
@@ -260,7 +328,18 @@ export default class ArticleList extends Component {
     return (
       <div className="article-list">
         <div className="content-container">
-          <Table columns={columns} dataSource={articleList} rowKey="id" />
+          <Table
+            columns={columns}
+            dataSource={articleList}
+            // rowKey="id"
+            rowKey="index"
+            components={{
+              body: {
+                wrapper: this.DraggableContainer,
+                row: this.DraggableBodyRow,
+              },
+            }}
+          />
         </div>
         <DeleteModal
           deletingObj={deletingArticle}

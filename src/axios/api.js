@@ -155,11 +155,11 @@ export async function addArticleApi(data) {
   });
 }
 //查询文章列表
-export async function getArticlesApi(parmas) {
+export async function getArticlesApi(params) {
   return request({
     url: "/api/GetArticles",
     method: "get",
-    parmas,
+    params,
   });
 }
 //修改文章展示状态
