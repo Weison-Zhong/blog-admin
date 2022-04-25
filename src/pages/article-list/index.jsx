@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Table, message, Switch, Input, Space } from "antd";
+import { Button, Table, message, Switch, Input, Space, Spin } from "antd";
 import "./index.less";
 import {
   FormOutlined,
@@ -12,6 +12,7 @@ import {
   toggleArticleStatusApi,
   getArticleTypesApi,
   deleteArticleApi,
+  updateArticleWeightApi,
 } from "@/axios/api";
 import { isArray } from "@/utils/is";
 import DeleteModal from "@/components/DeleteModal";
@@ -38,25 +39,35 @@ export default class ArticleList extends Component {
       deletingArticle: {},
       searchText: "",
       searchedColumn: "",
+      isLoading: false,
     };
   }
   componentDidMount() {
     this.fetchArticleList();
     this.fetchArticleTypes();
   }
-  onSortEnd = (data) => {
+  onSortEnd = async (data) => {
+    const { articleList, isLoading } = this.state;
     const { oldIndex, newIndex } = data;
-    console.log({ data });
-    const { articleList } = this.state;
-    if (oldIndex !== newIndex) {
-      const newData = arrayMoveImmutable(
-        [].concat(articleList),
-        oldIndex,
-        newIndex
-      ).filter((el) => !!el);
-      console.log("Sorted items: ", newData);
-      this.setState({ articleList: newData });
-    }
+    const diff = oldIndex - newIndex;
+    if (!diff || isLoading) return;
+    this.setState({ isLoading: true });
+    const matchArticle = articleList[oldIndex];
+    const { weight, id } = matchArticle || {};
+    // const newData = arrayMoveImmutable(
+    //   [].concat(articleList),
+    //   oldIndex,
+    //   newIndex
+    // ).filter((el) => !!el);
+    // this.setState({ articleList: newData });
+    const newWeight = weight + diff;
+    const res = await updateArticleWeightApi(id, { newWeight });
+    const { code } = res || {};
+    if (code === 200) {
+      this.fetchArticleList();
+      message.success("排序成功");
+    } else message.error("重新排序失败，请重试");
+    this.setState({ isLoading: false });
   };
 
   DraggableContainer = (props) => (
@@ -215,17 +226,19 @@ export default class ArticleList extends Component {
   };
   //标题关键字搜索代码段 end
   render() {
-    const { articleList, loading, deletingArticle, articleTypes } = this.state;
+    const { articleList, loading, deletingArticle, articleTypes, isLoading } =
+      this.state;
     const columns = [
       {
-        title: "Sort",
+        title: "排序",
         dataIndex: "sort",
-        width: 70,
+        width: 60,
         className: "drag-visible",
+        align: "center",
         render: () => <DragHandle />,
       },
       {
-        title: "排序",
+        title: "序号",
         width: 80,
         dataIndex: "index",
         align: "center",
@@ -264,15 +277,15 @@ export default class ArticleList extends Component {
       },
       {
         title: "更新时间",
-        width: 180,
+        width: 160,
         key: "updatedDate",
         dataIndex: "updatedDate",
         align: "center",
         sorter: (a, b) => Date.parse(a.updatedDate) - Date.parse(b.updatedDate),
       },
       {
-        title: "是否展示",
-        width: 110,
+        title: "展示",
+        width: 80,
         key: "status",
         dataIndex: "status",
         align: "center",
@@ -345,6 +358,12 @@ export default class ArticleList extends Component {
           deletingObj={deletingArticle}
           setDeletingObj={this.setDeletingArticle}
           onDelete={this.handleDeleteArticle}
+        />
+        <Spin
+          delay={800}
+          size="large"
+          tip="重新排序中···"
+          spinning={isLoading}
         />
       </div>
     );

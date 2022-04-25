@@ -169,6 +169,14 @@ export async function toggleArticleStatusApi(id) {
     method: "put",
   });
 }
+//修改文章排序权重
+export async function updateArticleWeightApi(id, data) {
+  return request({
+    url: `/api/UpdateArticleWeight/${id}`,
+    method: "put",
+    data,
+  });
+}
 //删除文章
 export async function deleteArticleApi(id) {
   return request({
@@ -326,6 +334,9 @@ export async function updateBlogConfigApi(data) {
     url: "/api/updateBlogConfig",
     method: "put",
     data,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
   });
 }
 //新增Icon

@@ -193,7 +193,7 @@ export default function ArticleEdit() {
         value={articleContent}
         onChange={(value) => setArticleContent(value)}
       />
-      <Spin size="large" tip="加载中..." spinning={isLoading} />
+      <Spin delay={800} size="large" tip="加载中..." spinning={isLoading} />
     </div>
   );
 }

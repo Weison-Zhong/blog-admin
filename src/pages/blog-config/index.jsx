@@ -1,16 +1,15 @@
 import React, { Component } from "react";
 import "./index.less";
-import { Button, message, Form, Input } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import { Button, message, Form, Input, Upload } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import { getBlogConfigApi, updateBlogConfigApi } from "@/axios/api";
 const { Item } = Form;
 const layout = {
-  labelCol: { span: 6 },
-  wrapperCol: { span: 16 },
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
 };
-const tailLayout = {
-  wrapperCol: { offset: 6, span: 16 },
-};
+let resumeFile = null;
 export default class BlogConfig extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +22,14 @@ export default class BlogConfig extends Component {
     this.setState({
       isSubmitting: true,
     });
-    const res = await updateBlogConfigApi(data);
+    const formData = new FormData();
+    //遍历antd表单数据插入formdata
+    for (let key in data) {
+      const val = data[key];
+      val && formData.append(key, data[key]);
+    }
+    resumeFile && formData.append("resumeFile", resumeFile);
+    const res = await updateBlogConfigApi(formData);
     this.setState({
       isSubmitting: false,
     });
@@ -37,12 +43,12 @@ export default class BlogConfig extends Component {
     console.log({ res });
     const { code, data } = res || {};
     if (code !== 200 || !data) return;
+    const { resumeUrl } = data || {};
+    resumeUrl && setPdfUrl(resumeUrl);
     setTimeout(() => {
       this.formRef.current && this.formRef.current.setFieldsValue(data);
     }, 0);
   };
-  resetFormData = () => this.formRef.current.resetFields();
-  handleModalClose = () => this.resetFormData();
   componentDidMount() {
     this.fetchBlogConfig();
   }
@@ -70,7 +76,7 @@ export default class BlogConfig extends Component {
             label="博客首页第三行"
             rules={[{ required: false }]}
           >
-            <Input allowClear={true} />
+            <Input.TextArea allowClear={true} />
           </Item>
           <Item
             name="iconLink"
@@ -79,27 +85,52 @@ export default class BlogConfig extends Component {
           >
             <Input allowClear={true} />
           </Item>
-          <Item {...tailLayout}>
+          <Item label="个人简历" rules={[{ required: false }]}>
+            <Upload
+              showUploadList={false}
+              customRequest={() => {}} //防止upload封装的action事件触发
+              onChange={handleChange}
+              className=""
+            >
+              <Button icon={<UploadOutlined />}>点击上传</Button>
+            </Upload>
             <Button
               type="primary"
               htmlType="submit"
+              style={{ marginLeft: "20px" }}
               icon={isSubmitting ? <LoadingOutlined /> : null}
             >
-              {isSubmitting ? "提交中" : "提交"}
-            </Button>
-            <Button
-              htmlType="button"
-              onClick={this.resetFormData}
-              style={{
-                display: "inline-block",
-                marginLeft: "10px",
-              }}
-            >
-              重置所有
+              {isSubmitting ? "保存中" : "保存"}
             </Button>
           </Item>
         </Form>
+        <embed id="pdf-container" type="application/pdf" />
       </div>
     );
   }
+}
+
+function handleChange(info) {
+  const { originFileObj } = info.file;
+  if (typeof originFileObj !== "object")
+    return message.error("上传文件格式有误，请检查");
+  const { type, size } = originFileObj || {};
+  const isPdf = type.includes("pdf");
+  if (!isPdf) {
+    return message.error("仅可上传Pdf格式文件");
+  }
+  const isLt10M = size / 1024 / 1024 < 10;
+  if (!isLt10M) {
+    return message.error("文件不能大于 10MB");
+  }
+  resumeFile = originFileObj;
+  const url = window.URL.createObjectURL(originFileObj);
+  setPdfUrl(url);
+}
+
+function setPdfUrl(url) {
+  if (typeof url !== "string") return message.error("简历文件路径有误，请检查");
+  const pdfContainer = document.getElementById("pdf-container");
+  if (typeof pdfContainer !== "object") return;
+  pdfContainer.setAttribute("src", url);
 }
