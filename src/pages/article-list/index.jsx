@@ -50,6 +50,7 @@ export default class ArticleList extends Component {
     const { articleList, isLoading } = this.state;
     const { oldIndex, newIndex } = data;
     const diff = oldIndex - newIndex;
+    console.log({ diff });
     if (!diff || isLoading) return;
     this.setState({ isLoading: true });
     const matchArticle = articleList[oldIndex];
@@ -60,8 +61,7 @@ export default class ArticleList extends Component {
     //   newIndex
     // ).filter((el) => !!el);
     // this.setState({ articleList: newData });
-    const newWeight = weight + diff;
-    const res = await updateArticleWeightApi(id, { newWeight });
+    const res = await updateArticleWeightApi(id, {diff});
     const { code } = res || {};
     if (code === 200) {
       this.fetchArticleList();

@@ -110,7 +110,7 @@ export default function ArticleEdit() {
   }, [updatingArticle]);
   return (
     <div className="article-edit">
-      <Form ref={formRef} className="form" initialValues={{ weight: 0 }}>
+      <Form ref={formRef} className="form">
         <Row gutter={2}>
           <Col span={16}>
             <Item name="title" label="标题" rules={[{ required: true }]}>
@@ -153,11 +153,6 @@ export default function ArticleEdit() {
                       <Option key={item}>{item}</Option>
                     ))}
                   </Select>
-                </Item>
-              </Col>
-              <Col span={6}>
-                <Item name="weight" label="权重" rules={[{ required: true }]}>
-                  <InputNumber min={0} />
                 </Item>
               </Col>
               <Col span={6}>
