@@ -221,7 +221,7 @@ export default function DemoList() {
             updatingDemo.icons && updatingDemo.icons.map((item) => item.id),
         }}
       >
-        <Item name="title" label="Api名" rules={[{ required: true }]}>
+        <Item name="title" label="Demo名" rules={[{ required: true }]}>
           <Input allowClear={true} />
         </Item>
         <Item name="description" label="描述" rules={[{ required: true }]}>

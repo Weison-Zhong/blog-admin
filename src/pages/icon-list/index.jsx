@@ -106,9 +106,18 @@ export default class IconList extends Component {
               const { name, key } = item;
               return (
                 <li key={i}>
-                  <i className={`iconfont ${key}`}></i>
-                  <span>{name}</span>
-                  <span>{key}</span>
+                  {key.includes("icon") ? (
+                    <>
+                      <i className={`iconfont ${key}`}></i>
+                      <span>{name}</span>
+                      <span>{key}</span>
+                    </>
+                  ) : (
+                    <>
+                      <img src={key} alt="" />
+                      <span>{name}</span>
+                    </>
+                  )}
                   <div>
                     <Button
                       icon={<FormOutlined />}
