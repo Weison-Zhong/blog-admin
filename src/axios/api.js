@@ -339,6 +339,13 @@ export async function updateBlogConfigApi(data) {
     },
   });
 }
+//删除简历，删除后web端将隐藏下载入口
+export async function deleteResumeApi() {
+  return request({
+    url: "/api/deleteResume",
+    method: "delete",
+  });
+}
 //新增Icon
 export async function addDemoApi(data) {
   return request({

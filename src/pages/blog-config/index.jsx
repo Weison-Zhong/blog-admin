@@ -1,15 +1,31 @@
 import React, { Component } from "react";
 import "./index.less";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, message, Form, Input, Upload } from "antd";
+import { Button, message, Form, Input, Upload, notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import { getBlogConfigApi, updateBlogConfigApi } from "@/axios/api";
+import {
+  getBlogConfigApi,
+  updateBlogConfigApi,
+  deleteResumeApi,
+} from "@/axios/api";
 const { Item } = Form;
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 20 },
 };
 let resumeFile = null;
+
+const openNotification = () => {
+  const args = {
+    message: "简历预览成功",
+    description: "简历本地上传预览成功，若确认无误请点击保存按钮上传到数据库。",
+    duration: 0,
+    top: 200,
+    key: "resumeSuccessNotification",
+  };
+  notification.success(args);
+};
+
 export default class BlogConfig extends Component {
   constructor(props) {
     super(props);
@@ -36,6 +52,13 @@ export default class BlogConfig extends Component {
     const { code, msg } = res || {};
     if (code !== 200) return;
     this.fetchBlogConfig();
+    message.success(msg);
+  };
+  handleDeleteResume = async () => {
+    const res = await deleteResumeApi();
+    const { code, msg } = res || {};
+    if (code !== 200) return message.error("删除简历失败，请重试");
+    setPdfUrl("");
     message.success(msg);
   };
   fetchBlogConfig = async () => {
@@ -92,15 +115,21 @@ export default class BlogConfig extends Component {
               onChange={handleChange}
               className=""
             >
-              <Button icon={<UploadOutlined />}>点击上传</Button>
+              <Button icon={<UploadOutlined />}>上传简历</Button>
             </Upload>
+            <Button
+              type="danger"
+              style={{ margin: "0 15px" }}
+              onClick={this.handleDeleteResume}
+            >
+              删除简历
+            </Button>
             <Button
               type="primary"
               htmlType="submit"
-              style={{ marginLeft: "20px" }}
               icon={isSubmitting ? <LoadingOutlined /> : null}
             >
-              {isSubmitting ? "保存中" : "保存"}
+              {isSubmitting ? "保存中" : "保存表单"}
             </Button>
           </Item>
         </Form>
@@ -125,6 +154,7 @@ function handleChange(info) {
   }
   resumeFile = originFileObj;
   const url = window.URL.createObjectURL(originFileObj);
+  openNotification();
   setPdfUrl(url);
 }
 
