@@ -226,10 +226,11 @@ export async function deleteMenuApi(id) {
   });
 }
 //获取访客列表
-export async function getGuestsApi() {
+export async function getGuestsApi(params) {
   return request({
     url: "/api/GetGuests",
     method: "get",
+    params,
   });
 }
 //查询项目类型列表

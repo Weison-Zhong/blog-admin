@@ -149,10 +149,10 @@ export default class IconList extends Component {
           onCancel={() => this.setState({ isShowModal: false })}
         >
           <Form {...layout} ref={this.formRef} onFinish={this.handleFormSubmit}>
-            <Item name="name" label="Icob名" rules={[{ required: true }]}>
+            <Item name="name" label="Icon名" rules={[{ required: true }]}>
               <Input allowClear={true} />
             </Item>
-            <Item name="key" label="Key" rules={[{ required: true }]}>
+            <Item name="key" label="key或Url" rules={[{ required: true }]}>
               <Input allowClear={true} />
             </Item>
             <Item {...tailLayout}>

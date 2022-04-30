@@ -91,7 +91,7 @@ export default function ArticleEdit() {
         message.success("新增文章成功，正前往列表页");
         setTimeout(() => {
           history.push("/article/list");
-        }, 1500);
+        }, 500);
       } else message.success(msg);
     } catch (error) {
       message.error("保存失败，请重试");

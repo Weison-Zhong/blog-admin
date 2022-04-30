@@ -5,7 +5,7 @@ const initialState = {
   userInfo: userInfo
     ? JSON.parse(userInfo)
     : {
-        userName: "未知用户",
+        userName: "",
         avatar: "",
       },
   menus: menus ? JSON.parse(menus) : [],

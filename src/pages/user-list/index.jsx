@@ -3,6 +3,7 @@ import "./index.less";
 import React, { useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
+import { useSelector } from "react-redux";
 import {
   getUsersApi,
   deleteUserApi,
@@ -12,6 +13,7 @@ import {
 } from "@/axios/api";
 import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
 import ImgUpload from "@/components/ImgUpload";
+import { useHistory } from "react-router-dom";
 const { Item } = Form;
 const { Option } = Select;
 const formConfig = {
@@ -38,6 +40,8 @@ const pwdValidator = (_rule, value) => {
 };
 let imgFile = null;
 export default function UserList() {
+  const history = useHistory();
+  const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [isShowModal, setIsShowModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingUser, setDeletingUser] = useState({});
@@ -141,7 +145,6 @@ export default function UserList() {
   const handleSubmit = async (newRole) => {
     const { id } = updatingUser;
     setIsSubmitting(true);
-    let res = null;
     const form = new FormData();
     for (let key in newRole) {
       form.append(key, newRole[key]);
@@ -149,9 +152,19 @@ export default function UserList() {
     form.append("avatarImg", imgFile);
     if (isSubmitting) return;
     setIsSubmitting(true);
+    let res = null;
     if (id) {
       //修改
       res = await updateUserApi(id, form);
+      //如果是修改当前登录用户的帐号信息，需跳转重新登录
+      const { id: currentUserId } = userInfo;
+      if (res.code === 200 && id === currentUserId) {
+        message.success("修改当前登录用户信息成功，请重新登录");
+        setTimeout(() => {
+          history.push("/login");
+        }, 300);
+        return;
+      }
     } else {
       //新增
       res = await addUserApi(form);
@@ -204,6 +217,7 @@ export default function UserList() {
         <Item
           name="password"
           label="密码"
+          autoComplete="new-password"
           rules={[{ validator: pwdValidator, required: true }]}
         >
           <Input.Password allowClear={true} />

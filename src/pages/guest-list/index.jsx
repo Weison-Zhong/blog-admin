@@ -13,8 +13,13 @@ export default class GuestList extends Component {
     this.fetchGuests();
   }
   fetchGuests = async () => {
-    const res = await getGuestsApi();
+    const params = {
+      pageNumber: 1,
+      pageSize: 10,
+    };
+    const res = await getGuestsApi(params);
     const { code, data } = res || {};
+    console.log({ data });
     if (code !== 200) return;
     if (isArray(data)) {
       data.forEach((item, i) => (item.index = i + 1));
@@ -47,7 +52,7 @@ export default class GuestList extends Component {
         sorter: (a, b) => Date.parse(a.createdDate) - Date.parse(b.createdDate),
       },
       {
-        title: "最后访问",
+        title: "最新访问",
         width: 180,
         key: "updatedDate",
         dataIndex: "updatedDate",
@@ -69,7 +74,7 @@ export default class GuestList extends Component {
     return (
       <div className="article-list">
         <div className="content-container">
-          <Table columns={columns} dataSource={this.state.guests} rowKey="id" />
+          <Table columns={columns} dataSource={this.state.guests} rowKey="ip" />
         </div>
       </div>
     );
