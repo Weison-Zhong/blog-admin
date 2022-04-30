@@ -39,8 +39,8 @@ export default function Login() {
   const pwdValidator = (_rule, value) => {
     if (!value) {
       return Promise.reject(new Error("密码不能为空"));
-    } else if (value.length > 16) {
-      return Promise.reject(new Error("密码不能大于16位"));
+    } else if (value.length > 32) {
+      return Promise.reject(new Error("密码不能大于32位"));
     } else if (value.length < 3) {
       return Promise.reject(new Error("密码不能小于3位"));
     }

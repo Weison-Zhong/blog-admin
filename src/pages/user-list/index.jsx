@@ -29,13 +29,14 @@ const formConfig = {
 const pwdValidator = (_rule, value) => {
   if (!value) {
     return Promise.reject(new Error("请输入密码"));
-  } else if (value.length > 12) {
-    return Promise.reject(new Error("密码不能大于12位"));
-  } else if (value.length < 6) {
-    return Promise.reject(new Error("密码不能小于于6位"));
-  } else if (!/^\w+$/.test(value)) {
-    return Promise.reject(new Error("请检查密码格式"));
+  } else if (value.length > 32) {
+    return Promise.reject(new Error("密码不能大于32位"));
+  } else if (value.length < 3) {
+    return Promise.reject(new Error("密码不能小于于3位"));
   }
+  //  else if (!/^\w+$/.test(value)) {
+  //   return Promise.reject(new Error("请检查密码格式"));
+  // }
   return Promise.resolve();
 };
 let imgFile = null;

@@ -3,7 +3,8 @@ import { getGuestsApi } from "@/axios/api";
 import { Table } from "antd";
 import { isArray } from "@/utils/is";
 let pageNumber = 1,
-  pageSize = 10;
+  pageSize = 10,
+  total = 0;
 export default class GuestList extends Component {
   constructor(props) {
     super(props);
@@ -32,11 +33,12 @@ export default class GuestList extends Component {
     };
     const res = await getGuestsApi(params);
     const { code, data } = res || {};
-    console.log({ data });
     if (code !== 200) return;
-    if (isArray(data)) {
-      data.forEach((item, i) => (item.index = i + 1));
-      this.setState({ guests: data });
+    const { guests, totalCount } = data;
+    total = totalCount;
+    if (isArray(guests)) {
+      guests.forEach((item, i) => (item.index = i + 1));
+      this.setState({ guests });
     }
   };
   render() {
@@ -95,7 +97,7 @@ export default class GuestList extends Component {
               showSizeChanger: true,
               onShowSizeChange: this.handlePageSizeChange,
               onChange: this.handlePageNumerChange,
-              total: 20,
+              total,
             }}
           />
         </div>
