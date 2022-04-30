@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { getGuestsApi } from "@/axios/api";
 import { Table } from "antd";
 import { isArray } from "@/utils/is";
+let pageNumber = 1,
+  pageSize = 10;
 export default class GuestList extends Component {
   constructor(props) {
     super(props);
@@ -12,10 +14,21 @@ export default class GuestList extends Component {
   componentDidMount() {
     this.fetchGuests();
   }
+  handlePageSizeChange = (newPageNum, newPageSize) => {
+    pageNumber = newPageNum;
+    pageSize = newPageSize;
+    this.fetchGuests();
+  };
+  handlePageNumerChange = (newPageNum, newPageSize) => {
+    pageNumber = newPageNum;
+    pageSize = newPageSize;
+    this.fetchGuests();
+  };
   fetchGuests = async () => {
+    this.setState({ guests: [] });
     const params = {
-      pageNumber: 1,
-      pageSize: 10,
+      pageNumber,
+      pageSize,
     };
     const res = await getGuestsApi(params);
     const { code, data } = res || {};
@@ -48,7 +61,6 @@ export default class GuestList extends Component {
         key: "createdDate",
         width: 180,
         align: "center",
-        defaultSortOrder: "descend",
         sorter: (a, b) => Date.parse(a.createdDate) - Date.parse(b.createdDate),
       },
       {
@@ -74,7 +86,18 @@ export default class GuestList extends Component {
     return (
       <div className="article-list">
         <div className="content-container">
-          <Table columns={columns} dataSource={this.state.guests} rowKey="ip" />
+          <Table
+            columns={columns}
+            dataSource={this.state.guests}
+            rowKey="ip"
+            scroll={{ y: "calc(100vh - 180px)" }}
+            pagination={{
+              showSizeChanger: true,
+              onShowSizeChange: this.handlePageSizeChange,
+              onChange: this.handlePageNumerChange,
+              total: 20,
+            }}
+          />
         </div>
       </div>
     );

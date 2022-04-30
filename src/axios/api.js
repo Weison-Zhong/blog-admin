@@ -384,3 +384,10 @@ export async function toggleDemoStatusApi(id) {
     method: "put",
   });
 }
+//查询访客数据
+export async function getGuestStatisticsApi() {
+  return request({
+    url: "/api/GetGuestStatistics",
+    method: "get",
+  });
+}

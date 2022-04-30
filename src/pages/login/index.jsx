@@ -67,7 +67,7 @@ export default function Login() {
       <div className="right">
         <div>
           <h5>欢迎使用后台管理系统</h5>
-          <h6>访客帐号密码已默认填充</h6>
+          <h6>帐号:admin 密码:123456(仅8081端口开源)</h6>
           <Form
             className="form"
             initialValues={fillFormInitialValues()}

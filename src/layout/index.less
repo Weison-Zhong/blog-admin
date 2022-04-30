@@ -66,14 +66,20 @@
     border-right: 1px solid #e5e6eb;
     .fold-btn {
       position: absolute;
+      z-index: 100;
       bottom: 0;
       right: 0;
+    }
+    .ant-layout-sider-children {
+      overflow: auto;
     }
   }
 
   .content {
-    padding: 10px;
+    padding: 5px;
     height: 100%;
     position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
   }
 }

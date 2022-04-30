@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import "./index.less";
+import { getGuestStatisticsApi } from "@/axios/api";
 import * as echarts from "echarts";
 let chart1 = null;
+const chart1Data = {
+  xData: Array(12).fill("2022"),
+  yData: Array(12).fill(0),
+};
 export default class SystemStatus extends Component {
   constructor(props) {
     super(props);
@@ -15,21 +20,35 @@ export default class SystemStatus extends Component {
     const option = {
       xAxis: {
         type: "category",
-        data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        data: chart1Data.xData,
       },
       yAxis: {
         type: "value",
       },
       series: [
         {
-          data: [120, 200, 150, 80, 70, 110, 130],
+          data: chart1Data.yData,
           type: "bar",
         },
       ],
     };
     chart1.setOption(option);
   };
+  fetchData = async () => {
+    const res = await getGuestStatisticsApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    const {
+      guestCityList,
+      newGuestTrendList,
+      todayNewGuestCount,
+      todayAccssCount,
+      totalAccessCount,
+      totalGuestCount,
+    } = data;
+  };
   componentDidMount() {
+    this.fetchData();
     this.initChart1();
   }
   render() {
