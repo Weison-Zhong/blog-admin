@@ -169,7 +169,15 @@ export default function ApiList() {
         <Button type="primary" onClick={() => setIsShowModal(true)}>
           添加Api
         </Button>
-        <Table columns={columns} dataSource={ApiList} rowKey="id" />
+        <Table
+          columns={columns}
+          dataSource={ApiList}
+          rowKey="id"
+          scroll={{ y: "calc(100vh - 215px)" }}
+          pagination={{
+            showSizeChanger: true,
+          }}
+        />
       </div>
       <FormModal
         formConfig={formConfig}

@@ -5,6 +5,7 @@ import {
   updateMenuApi,
   deleteMenuApi,
   getIconsApi,
+  getUserMenusApi,
 } from "@/axios/api";
 import "./index.less";
 import {
@@ -17,6 +18,7 @@ import {
   Switch,
   InputNumber,
 } from "antd";
+import { UPDATE_MENUS } from "@/redux/actionTypes";
 import {
   PlusCircleOutlined,
   FormOutlined,
@@ -25,6 +27,7 @@ import {
 } from "@ant-design/icons";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
+import { useDispatch } from "react-redux";
 const { Item } = Form;
 const { Option } = Select;
 const formConfig = {
@@ -48,6 +51,7 @@ const expandable = {
   //   ),
 };
 export default function MenuList() {
+  const dispatch = useDispatch();
   const [menus, setMenus] = useState([]);
   const [isShowModal, setIsShowModal] = useState(false);
   const [deletingMenu, setDeletingMenu] = useState({});
@@ -136,6 +140,15 @@ export default function MenuList() {
       setDeletingMenu({});
     }
   };
+  const updateUserMenusList = async () => {
+    const res = await getUserMenusApi();
+    const { code, data } = res || {};
+    if (code !== 200) return;
+    dispatch({
+      type: UPDATE_MENUS,
+      payload: data,
+    });
+  };
   const fetchIcons = async () => {
     const res = await getIconsApi();
     const { code, data } = res || {};
@@ -166,6 +179,9 @@ export default function MenuList() {
     if (id) {
       //修改
       res = await updateMenuApi(id, data);
+      if (res.code === 200) {
+        // updateUserMenusList();
+      }
     } else {
       //新增
       res = await addMenuApi(data);
@@ -194,6 +210,8 @@ export default function MenuList() {
         dataSource={menus}
         expandable={expandable}
         key={menus[0] && menus[0].id} //防止全部自动展开失败，因为defaultExpandAllRows只在首次渲染生效
+        scroll={{ y: "calc(100vh - 160px)" }}
+        pagination={false}
       />
       <FormModal
         isShowModal={isShowModal}

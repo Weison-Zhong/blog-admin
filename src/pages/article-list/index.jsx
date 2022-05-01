@@ -61,7 +61,7 @@ export default class ArticleList extends Component {
     //   newIndex
     // ).filter((el) => !!el);
     // this.setState({ articleList: newData });
-    const res = await updateArticleWeightApi(id, {diff});
+    const res = await updateArticleWeightApi(id, { diff });
     const { code } = res || {};
     if (code === 200) {
       this.fetchArticleList();
@@ -351,6 +351,10 @@ export default class ArticleList extends Component {
                 wrapper: this.DraggableContainer,
                 row: this.DraggableBodyRow,
               },
+            }}
+            scroll={{ y: "calc(100vh - 180px)" }}
+            pagination={{
+              showSizeChanger: true,
             }}
           />
         </div>

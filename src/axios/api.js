@@ -46,15 +46,6 @@ export async function updatePermissionForRoleApi(data) {
     data,
   });
 }
-//更新角色的菜单数组
-export async function updateMenuForRoleApi(data) {
-  const { roleId } = data || {};
-  return request({
-    url: `/api/updateMenuForRole/${roleId}`,
-    method: "post",
-    data,
-  });
-}
 //查询管理员列表
 export async function getUsersApi() {
   return request({
@@ -202,7 +193,7 @@ export async function getMenusApi() {
     method: "get",
   });
 }
-//新增二级菜单
+//新增菜单
 export async function addMenuApi(data) {
   return request({
     url: "/api/AddMenu",
@@ -231,65 +222,6 @@ export async function getGuestsApi(params) {
     url: "/api/GetGuests",
     method: "get",
     params,
-  });
-}
-//查询项目类型列表
-export async function getProjectTypesApi() {
-  return request({
-    url: "/api/GetProjectTypes",
-    method: "get",
-  });
-}
-//查询项目详情
-export async function getProjectApi(projectId) {
-  return request({
-    url: `/api/GetProject/${projectId}`,
-    method: "get",
-    params: { origin: "admin" },
-  });
-}
-//新增项目
-export async function addProjectApi(data) {
-  return request({
-    url: "/api/AddProject",
-    method: "post",
-    data,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-}
-//查询项目列表
-export async function getProjectsApi(parmas) {
-  return request({
-    url: "/api/GetProjects",
-    method: "get",
-    parmas,
-  });
-}
-//修改项目展示状态
-export async function toggleProjectStatusApi(id) {
-  return request({
-    url: `/api/toggleProjectStatus/${id}`,
-    method: "put",
-  });
-}
-//删除项目
-export async function deleteProjectApi(id) {
-  return request({
-    url: `/api/DeleteProject/${id}`,
-    method: "delete",
-  });
-}
-//修改项目
-export async function updateProjectApi(projectId, data) {
-  return request({
-    url: `/api/UpdateProject/${projectId}`,
-    method: "put",
-    data,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
   });
 }
 //查询Icon列表
@@ -347,7 +279,7 @@ export async function deleteResumeApi() {
     method: "delete",
   });
 }
-//新增Icon
+//新增Demo
 export async function addDemoApi(data) {
   return request({
     url: "/api/addDemo",
@@ -355,7 +287,7 @@ export async function addDemoApi(data) {
     data,
   });
 }
-//删除单个菜单
+//删除单个Demo
 export async function deleteDemoApi(id) {
   return request({
     url: `/api/DeleteDemo/${id}`,

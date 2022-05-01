@@ -197,7 +197,12 @@ export default function UserList() {
         <Button type="primary" onClick={() => setIsShowModal(true)}>
           新增用户
         </Button>
-        <Table columns={columns} dataSource={userList} rowKey="id" />
+        <Table
+          columns={columns}
+          dataSource={userList}
+          rowKey="id"
+          scroll={{ y: "calc(100vh - 210px)" }}
+        />
       </div>
       <FormModal
         formConfig={formConfig}

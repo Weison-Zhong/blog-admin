@@ -48,6 +48,7 @@ export default function Login() {
   };
   const fillFormInitialValues = () => {
     const rememberUserName = localStorage.getItem("username");
+    console.log({ rememberUserName });
     if (rememberUserName) {
       return {
         username: JSON.parse(rememberUserName),
@@ -65,9 +66,13 @@ export default function Login() {
         <header>钟伟胜博客后台管理系统</header>
       </div>
       <div className="right">
-        <div>
+        <div className="content">
           <h5>欢迎使用后台管理系统</h5>
-          <h6>帐号:admin 密码:123456(仅8081端口开源)</h6>
+          <a href="http://www.weison-zhong.cn:8081" target="_blank">
+            已开放公共帐号:admin 密码:123456
+            <br />
+            (仅8081端口开源,点击可前往)
+          </a>
           <Form
             className="form"
             initialValues={fillFormInitialValues()}
@@ -96,14 +101,12 @@ export default function Login() {
                 prefix={<LockOutlined />}
               />
             </Item>
-
             <Checkbox
               checked={isRememberAccount}
               onChange={handleCheckboxChange}
             >
               记住帐号
             </Checkbox>
-
             <Button
               type="primary"
               htmlType="submit"

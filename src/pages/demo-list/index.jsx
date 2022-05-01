@@ -204,7 +204,15 @@ export default function DemoList() {
         <Button type="primary" onClick={() => setIsShowModal(true)}>
           添加Demo
         </Button>
-        <Table columns={columns} dataSource={demoList} rowKey="id" />
+        <Table
+          columns={columns}
+          dataSource={demoList}
+          rowKey="id"
+          scroll={{ y: "calc(100vh - 215px)" }}
+          pagination={{
+            showSizeChanger: true,
+          }}
+        />
       </div>
       <FormModal
         formConfig={formConfig}

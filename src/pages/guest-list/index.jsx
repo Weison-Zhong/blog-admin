@@ -81,7 +81,7 @@ export default class GuestList extends Component {
         align: "center",
         render: (_, row) => {
           const { country, province, city } = row || {};
-          return `${country}${province}省${city}市`;
+          return `${country}${province}${city}`;
         },
       },
     ];

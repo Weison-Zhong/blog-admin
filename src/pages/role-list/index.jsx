@@ -243,7 +243,13 @@ export default function RoleList() {
         <Button type="primary" onClick={() => setIsShowModal(true)}>
           新增角色
         </Button>
-        <Table columns={columns} dataSource={roleList} rowKey="id" />
+        <Table
+          columns={columns}
+          dataSource={roleList}
+          rowKey="id"
+          scroll={{ y: "calc(100vh - 160px)" }}
+          pagination={false}
+        />
       </div>
       <FormModal
         formConfig={formConfig}

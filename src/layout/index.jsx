@@ -142,8 +142,10 @@ export default function Home() {
     <Layout className="page-layout">
       <Header className="header">
         <div className="left">
-          <div className="logo"></div>
-          <h5>a</h5>
+          <div className="logo">
+            <img src={require("../assets/images/logo.png")} alt="" />
+          </div>
+          <h5>钟伟胜博客后台管理系统</h5>
         </div>
         <Dropdown overlay={menu} trigger={["click"]}>
           <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>

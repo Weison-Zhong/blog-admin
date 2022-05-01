@@ -5,7 +5,6 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: flex-start;
-    height: calc(100vh - 110px);
     overflow: auto;
     li {
       flex: 0 0 auto;
@@ -17,10 +16,14 @@
       margin: 8px;
       position: relative;
       width: 125px;
-      height: 135px;
+      height: 150px;
       span {
         color: #666;
-        word-break: break-all;
+        white-space: nowrap;
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        text-align: center;
       }
       i.iconfont {
         font-size: 65px;
