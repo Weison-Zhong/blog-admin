@@ -49,15 +49,15 @@ const writeStatsJson = argv.indexOf("--stats") !== -1;
 // Generate configuration
 const config = configFactory("production");
 config.externals = {
-  react: "React",
-  "react-dom": "ReactDOM",
-  "react-router-dom": "ReactRouterDOM",
-  redux: "Redux",
-  "react-redux": "ReactRedux",
-  axios: "axios",
-  lodash: "_",
+  // react: "React",
+  // "react-dom": "ReactDOM",
+  // "react-router-dom": "ReactRouterDOM",
+  // redux: "Redux",
+  // "react-redux": "ReactRedux",
+  // axios: "axios",
+  // lodash: "_",
   echarts: "echarts",
-  // 'antd':'antd',
+  antd: "antd",
 };
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
