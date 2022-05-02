@@ -56,8 +56,8 @@ config.externals = {
   // "react-redux": "ReactRedux",
   // axios: "axios",
   // lodash: "_",
+  // antd: "antd",
   echarts: "echarts",
-  antd: "antd",
 };
 // We require that you explicitly set browsers and do not fall back to
 // browserslist defaults.
