@@ -68,8 +68,10 @@
     "terser-webpack-plugin": "^5.2.5",
     "web-vitals": "^2.1.4",
     "webpack": "^5.64.4",
+    "webpack-bundle-analyzer": "^4.5.0",
     "webpack-dev-server": "^4.6.0",
     "webpack-manifest-plugin": "^4.0.2",
+    "webpackbar": "^5.0.2",
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {

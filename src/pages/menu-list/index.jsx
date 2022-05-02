@@ -7,7 +7,6 @@ import {
   getIconsApi,
   getUserMenusApi,
 } from "@/axios/api";
-import "./index.less";
 import {
   Table,
   Button,

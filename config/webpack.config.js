@@ -1,5 +1,6 @@
 "use strict";
-
+const WebpackBar = require("webpackbar");
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
@@ -595,6 +596,9 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
+      new webpack.ProgressPlugin(),
+      new WebpackBar(),
+      new BundleAnalyzerPlugin({ analyzerPort: 9091 }),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
@@ -780,6 +784,10 @@ module.exports = function (webpackEnv) {
           },
         }),
     ].filter(Boolean),
+    //配置不打包的文件，新建externals，然后去build.js中配置
+    //因为react开发环境和生产环境使用的是不同文件（可查看package.json的scripts字段），
+    //所以直接配置 build.js 文件就可以，不用特意写环境判断代码
+    externals: {},
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
     performance: false,

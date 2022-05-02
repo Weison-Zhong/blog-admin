@@ -12,7 +12,6 @@ import {
   Divider,
   Form,
   Input,
-  InputNumber,
   message,
   Row,
   Select,
@@ -107,7 +106,7 @@ export default function ArticleEdit() {
   }, []);
   useEffect(() => {
     formRef.current && formRef.current.setFieldsValue(updatingArticle);
-  }, [updatingArticle]);
+  }, [updatingArticle, formRef]);
   return (
     <div className="article-edit">
       <Form ref={formRef} className="form">

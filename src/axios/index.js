@@ -1,6 +1,5 @@
 import axios from "axios";
 import { message } from "antd";
-import { isArray } from "@/utils/is";
 const http = axios.create({
   baseURL: "",
   timeout: 30000,
@@ -23,7 +22,7 @@ http.interceptors.response.use(
   (res) => {
     const { data } = res;
     const { code, msg } = data;
-    if (code == 200) {
+    if (code === 200) {
       return data;
     }
     message.error(msg);

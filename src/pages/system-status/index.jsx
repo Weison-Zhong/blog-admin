@@ -394,11 +394,11 @@ class SystemStatus extends Component {
           <ul>
             <li>
               <UserOutlined />
-              访问总数:({todayAccssCount})
+              访问总数:({totalAccessCount})
             </li>
             <li>
               <SwapOutlined />
-              今日流量:({totalAccessCount})
+              今日流量:({todayAccssCount})
             </li>
           </ul>
         </div>
