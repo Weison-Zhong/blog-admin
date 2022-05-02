@@ -141,7 +141,7 @@ export default function RoleList() {
     const res = await getRolesApi();
     const { code, data } = res || {};
     if (code !== 200) return;
-    console.log("roles res --->", res); //菜单分配仍有问题待处理,估计要重新设计表结构才行，明确个submenu和menu的关系
+    // console.log("roles res --->", res); 
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
@@ -217,7 +217,7 @@ export default function RoleList() {
   //请求菜单列表，从结果中构造出权限树需要的数据结构
   const fetchMenus = async () => {
     const res = await getMenusApi();
-    console.log("menus --->", res);
+    // console.log("menus --->", res);
     const { data, code } = res || {};
     if (code !== 200) return;
     const flattenChildMenus = getFlattenChildrenMenuList(data);
@@ -230,6 +230,7 @@ export default function RoleList() {
         children: apis,
       });
     });
+    // console.log({treeData});
     setPermissionTreeData(treeData);
     flattenPermissions = getFlattenArray(treeData);
   };

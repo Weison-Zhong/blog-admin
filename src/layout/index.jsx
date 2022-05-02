@@ -54,7 +54,7 @@ function renderRoutes(routes) {
           return (
             <Item
               key={route.key}
-              icon={<i className={`iconfont ${route.icon}`}></i>}
+              icon={<i className={`iconfont ${route.icon.key}`}></i>}
             >
               <Link to={`/${route.key}`}>{route.name}</Link>
             </Item>
@@ -63,7 +63,7 @@ function renderRoutes(routes) {
         nodes.push(
           <Item
             key={route.key}
-            icon={<i className={`iconfont ${route.icon}`}></i>}
+            icon={<i className={`iconfont ${route.icon.key}`}></i>}
           >
             <Link to={`/${route.key}`}>{route.name}</Link>
           </Item>
@@ -76,7 +76,7 @@ function renderRoutes(routes) {
           return (
             <SubMenu
               key={route.key}
-              icon={<i className={`iconfont ${route.icon}`}></i>}
+              icon={<i className={`iconfont ${route.icon.key}`}></i>}
             >
               {travel(route.children, level + 1)}
             </SubMenu>
@@ -87,7 +87,7 @@ function renderRoutes(routes) {
           <SubMenu
             key={route.key}
             title={route.name}
-            icon={<i className={`iconfont ${route.icon}`}></i>}
+            icon={<i className={`iconfont ${route.icon.key}`}></i>}
           >
             {travel(route.children, level + 1)}
           </SubMenu>

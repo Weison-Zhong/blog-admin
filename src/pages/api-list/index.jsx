@@ -63,7 +63,7 @@ export default function ApiList() {
       dataIndex: "createdDate",
       align: "center",
       render: (_, row) => {
-        const { menuName } = row.menu || {};
+        const { menuName } = row.belongMenu || {};
         return menuName;
       },
     },
@@ -108,7 +108,7 @@ export default function ApiList() {
     //若axios没有加全局拦截器，那么走不到这里，控制台会报Uncaught (in promise) Error错误，但是如果上面await那里加了catch则可以继续执行，res是undefined;
     //若axios的interceptors.response.use()第二个参数有处理，则返回我们return的东西。
     const { code, data } = res || {};
-    console.log({ res });
+    // console.log({ res });
     if (code !== 200) return;
     data.forEach((item, i) => (item.index = i + 1));
     setApiList(data);

@@ -152,15 +152,15 @@ export default function MenuList() {
   const fetchIcons = async () => {
     const res = await getIconsApi();
     const { code, data } = res || {};
-    console.log("icons-->", data);
-    if (code !== 200) message.error("获取Icon图标失败，请刷新重试");
+    if (code !== 200 && !data)
+      return message.error("获取Icon图标失败，请刷新重试");
     setIcons(data);
   };
   const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
     console.log("menus-->", data);
-    if (code !== 200) return;
+    if (code !== 200 && !data) return;
     setMenus(data);
   };
   useEffect(() => {
@@ -180,7 +180,7 @@ export default function MenuList() {
       //修改
       res = await updateMenuApi(id, data);
       if (res.code === 200) {
-        // updateUserMenusList();
+        updateUserMenusList();
       }
     } else {
       //新增
