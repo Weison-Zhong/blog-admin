@@ -210,8 +210,10 @@ export default function MenuList() {
         dataSource={menus}
         expandable={expandable}
         key={menus[0] && menus[0].id} //防止全部自动展开失败，因为defaultExpandAllRows只在首次渲染生效
-        scroll={{ y: "calc(100vh - 160px)" }}
-        pagination={false}
+        scroll={{ y: "calc(100vh - 220px)" }}
+        pagination={{
+          showSizeChanger: true,
+        }}
       />
       <FormModal
         isShowModal={isShowModal}

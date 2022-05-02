@@ -406,6 +406,11 @@ class SystemStatus extends Component {
           <div ref={this.chart1Ref} className="echart-container"></div>
           <div ref={this.chart2Ref} className="echart-container"></div>
         </div>
+        <footer>
+          <a href="https://github.com/Weison-Zhong" target="_blank">
+            github
+          </a>
+        </footer>
       </div>
     );
   }
