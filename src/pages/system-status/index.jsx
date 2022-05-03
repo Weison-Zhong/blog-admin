@@ -88,12 +88,16 @@ class SystemStatus extends Component {
       welcomeStr = "深夜了,早点休息了哈";
     } else if (hour < 6) {
       welcomeStr = "凌晨了,注意休息哈";
-    } else if (hour < 11) {
+    } else if (hour < 9) {
+      welcomeStr = "早上好";
+    } else if (hour < 12) {
       welcomeStr = "上午好";
-    } else if (hour < 13) {
+    } else if (hour < 15) {
       welcomeStr = "中午好";
-    } else if (hour < 19) {
+    } else if (hour < 18) {
       welcomeStr = "下午好";
+    } else if (hour < 20) {
+      welcomeStr = "傍晚啦";
     } else {
       welcomeStr = "晚上好";
     }
@@ -408,7 +412,11 @@ class SystemStatus extends Component {
           <div ref={this.chart2Ref} className="echart-container"></div>
         </div>
         <footer>
-          <a href="https://github.com/Weison-Zhong" target="_blank" rel="noreferrer">
+          <a
+            href="https://github.com/Weison-Zhong"
+            target="_blank"
+            rel="noreferrer"
+          >
             github
           </a>
         </footer>
