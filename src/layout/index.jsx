@@ -46,7 +46,7 @@ function getFlattenRoutes(routes) {
 function renderRoutes(routes) {
   const nodes = [];
   function travel(_routes, level) {
-    return _routes.map((route) => {
+    return _routes.forEach((route) => {
       //没有子路由
       if (route.component && !isArray(route.children)) {
         //二级及以上目录没有子路由
@@ -106,7 +106,7 @@ export default function Home() {
   const { pathname } = useLocation();
   let menus = useSelector((state) => state.global.menus) || [];
   // console.log({ menus });
-  const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);
+  const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);// eslint-disable-line react-hooks/exhaustive-deps
   let defaultSelectedKeys = ["system/status"]; //默认展示欢迎页
   let defaultOpenKeys = ["system"];
   if (pathname) {
@@ -148,7 +148,7 @@ export default function Home() {
           <h5>钟伟胜博客后台管理系统</h5>
         </div>
         <Dropdown overlay={menu} trigger={["click"]}>
-          <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+          <div className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
             <div className="right">
               <div className="user-info">
                 <div className="avatar">
@@ -158,7 +158,7 @@ export default function Home() {
               </div>
             </div>
             <DownOutlined />
-          </a>
+          </div>
         </Dropdown>
       </Header>
       <Layout>

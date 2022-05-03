@@ -204,6 +204,7 @@ class SystemStatus extends Component {
       },
       title: [
         {
+          //eslint-disable-next-line no-useless-concat
           text: "{name|" + "总人数" + "}\n{val|" + totalGuestCount + "}",
           top: "center",
           left: "center",
@@ -407,7 +408,7 @@ class SystemStatus extends Component {
           <div ref={this.chart2Ref} className="echart-container"></div>
         </div>
         <footer>
-          <a href="https://github.com/Weison-Zhong" target="_blank">
+          <a href="https://github.com/Weison-Zhong" target="_blank" rel="noreferrer">
             github
           </a>
         </footer>

@@ -11,7 +11,7 @@ const initialState = {
   menus: menus ? JSON.parse(menus) : [],
 };
 
-export default function (state = initialState, action) {
+export default function global(state = initialState, action) {
   switch (action.type) {
     case UPDATE_USERINFO: {
       const userInfo = action.payload || {};

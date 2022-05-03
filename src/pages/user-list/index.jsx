@@ -63,7 +63,7 @@ export default function UserList() {
       width: 120,
       align: "center",
       render: (_, row) => {
-        return <img className="avatar" src={row.avatarUrl} />;
+        return <img className="avatar" src={row.avatarUrl} alt=""/>;
       },
     },
     {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, message, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox } from "antd";
 import { loginApi } from "../../axios/api";
 import { useDispatch } from "react-redux";
 import { UPDATE_USERINFO, UPDATE_MENUS } from "@/redux/actionTypes";
@@ -10,11 +10,13 @@ const { Item } = Form;
 export default function Login() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [isLogging, setIsLogging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRememberAccount, setIsRememberAccount] = useState(true);
   const onFinish = async (values) => {
+    setIsLoading(true);
     const res = await loginApi(values);
-    console.log("login res-->", res);
+    setIsLoading(false);
+    // console.log("login res-->", res);
     const { data } = res;
     if (!data) return;
     const { token, menuList } = data || {};
@@ -68,7 +70,11 @@ export default function Login() {
       <div className="right">
         <div className="content">
           <h5>欢迎使用后台管理系统</h5>
-          <a href="http://www.weison-zhong.cn:8081" target="_blank">
+          <a
+            href="http://www.weison-zhong.cn:8081"
+            target="_blank"
+            rel="noreferrer"
+          >
             已开放公共帐号:admin 密码:123456
             <br />
             (仅8081端口开源,点击可前往)
@@ -110,15 +116,19 @@ export default function Login() {
             <Button
               type="primary"
               htmlType="submit"
-              icon={isLogging ? <LoadingOutlined /> : null}
+              icon={isLoading ? <LoadingOutlined /> : null}
               style={{ width: "100%", marginTop: "15px" }}
             >
-              {isLogging ? "登录中" : "登录"}
+              {isLoading ? "登录中" : "登录"}
             </Button>
           </Form>
         </div>
         <footer>
-          <a href="https://github.com/Weison-Zhong" target="_blank">
+          <a
+            href="https://github.com/Weison-Zhong"
+            target="_blank"
+            rel="noreferrer"
+          >
             github
           </a>
         </footer>

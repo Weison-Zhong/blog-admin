@@ -22,7 +22,6 @@ import {
   SortableHandle,
 } from "react-sortable-hoc";
 import { MenuOutlined } from "@ant-design/icons";
-import { arrayMoveImmutable } from "array-move";
 let searchInput = null;
 const DragHandle = SortableHandle(() => (
   <MenuOutlined style={{ cursor: "grab", color: "#999" }} />
@@ -54,7 +53,7 @@ export default class ArticleList extends Component {
     if (!diff || isLoading) return;
     this.setState({ isLoading: true });
     const matchArticle = articleList[oldIndex];
-    const { weight, id } = matchArticle || {};
+    const {  id } = matchArticle || {};
     // const newData = arrayMoveImmutable(
     //   [].concat(articleList),
     //   oldIndex,
