@@ -12,7 +12,7 @@ import loadable from "@loadable/component";
 import { isArray } from "../utils/is";
 import { loadCSS } from "../utils/tools";
 import "./index.less";
-// import menus from "../router/routes";
+import menus from "../router/routes";
 import KeepAlive, { AliveScope } from "react-activation";
 import { Layout, Dropdown, Menu, Button } from "antd";
 import { getBlogConfigApi } from "@/axios/api";
@@ -46,7 +46,8 @@ function getFlattenRoutes(routes) {
 function renderRoutes(routes) {
   const nodes = [];
   function travel(_routes, level) {
-    return _routes.forEach((route) => {
+    //eslint-disable-next-line array-callback-return
+    return _routes.map((route) => {
       //没有子路由
       if (route.component && !isArray(route.children)) {
         //二级及以上目录没有子路由
@@ -104,9 +105,9 @@ export default function Home() {
   const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [collapsed, setCollapsed] = useState(false);
   const { pathname } = useLocation();
-  let menus = useSelector((state) => state.global.menus) || [];
-  // console.log({ menus });
-  const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []);// eslint-disable-line react-hooks/exhaustive-deps
+  // let menus = useSelector((state) => state.global.menus) || [];
+  console.log({ menus });
+  const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []); // eslint-disable-line react-hooks/exhaustive-deps
   let defaultSelectedKeys = ["system/status"]; //默认展示欢迎页
   let defaultOpenKeys = ["system"];
   if (pathname) {
@@ -148,7 +149,10 @@ export default function Home() {
           <h5>钟伟胜博客后台管理系统</h5>
         </div>
         <Dropdown overlay={menu} trigger={["click"]}>
-          <div className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+          <div
+            className="ant-dropdown-link"
+            onClick={(e) => e.preventDefault()}
+          >
             <div className="right">
               <div className="user-info">
                 <div className="avatar">
@@ -184,6 +188,16 @@ export default function Home() {
             mode="inline"
           >
             {renderRoutes(menus)}
+            {/* <SubMenu
+              key={1}
+              title={"a"}
+            >
+              <Item
+                key={12}
+              >
+                <Link to={`/${1}`}>{"b"}</Link>
+              </Item>
+            </SubMenu> */}
           </Menu>
         </Sider>
         <Content className="content">
