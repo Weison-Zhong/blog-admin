@@ -12,7 +12,7 @@ import loadable from "@loadable/component";
 import { isArray } from "../utils/is";
 import { loadCSS } from "../utils/tools";
 import "./index.less";
-import menus from "../router/routes";
+// import menus from "../router/routes";
 import KeepAlive, { AliveScope } from "react-activation";
 import { Layout, Dropdown, Menu, Button } from "antd";
 import { getBlogConfigApi } from "@/axios/api";
@@ -100,13 +100,12 @@ function renderRoutes(routes) {
   return nodes;
 }
 
-export default function Home() {
+export default function LayoutPage() {
   const history = useHistory();
   const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [collapsed, setCollapsed] = useState(false);
   const { pathname } = useLocation();
-  // let menus = useSelector((state) => state.global.menus) || [];
-  console.log({ menus });
+  let menus = useSelector((state) => state.global.menus) || [];
   const flattenRoutes = useMemo(() => getFlattenRoutes(menus) || [], []); // eslint-disable-line react-hooks/exhaustive-deps
   let defaultSelectedKeys = ["system/status"]; //默认展示欢迎页
   let defaultOpenKeys = ["system"];

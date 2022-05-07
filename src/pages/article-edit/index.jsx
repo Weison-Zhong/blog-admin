@@ -19,6 +19,7 @@ import {
   Spin,
   Switch,
   Typography,
+  Button,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import ImgUpload from "../../components/ImgUpload";
@@ -29,6 +30,7 @@ const { Option } = Select;
 let imgFile = null;
 export default function ArticleEdit() {
   const formRef = React.createRef();
+
   const [articleContent, setArticleContent] = useState("");
   const [articleTypes, setArticleTypes] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
@@ -61,20 +63,19 @@ export default function ArticleEdit() {
     setNewArticleType("");
   };
   //保存文章
-  const handleSaveArticle = async () => {
+  const handleSaveArticle = async (antdFormData) => {
     setIsLoading(true);
     try {
       const { id } = updatingArticle || {};
-      const antdFormData = await formRef.current.validateFields();
-      // console.log("Validate Success:", antdFormData);
       antdFormData.status = Number(antdFormData.status);
       const articleForm = new FormData();
+      console.log({ antdFormData });
       //遍历antd表单数据插入formdata
       for (let key in antdFormData) {
         articleForm.append(key, antdFormData[key]);
       }
       articleForm.append("content", articleContent);
-      articleForm.append("coverImage", imgFile);
+      imgFile && articleForm.append("coverImage", imgFile);
       let res = null;
       if (id) {
         //修改
@@ -91,7 +92,10 @@ export default function ArticleEdit() {
         setTimeout(() => {
           history.push("/article/list");
         }, 500);
-      } else message.success(msg);
+      } else {
+        fetchArticleDetail(id);
+        message.success(msg);
+      }
     } catch (error) {
       message.error("保存失败，请重试");
       setIsLoading(false);
@@ -109,7 +113,7 @@ export default function ArticleEdit() {
   }, [updatingArticle, formRef]);
   return (
     <div className="article-edit">
-      <Form ref={formRef} className="form">
+      <Form ref={formRef} className="form" onFinish={handleSaveArticle}>
         <Row gutter={2}>
           <Col span={16}>
             <Item name="title" label="标题" rules={[{ required: true }]}>
@@ -165,6 +169,13 @@ export default function ArticleEdit() {
                   <Switch checkedChildren="上架" unCheckedChildren="隐藏" />
                 </Item>
               </Col>
+              <Col span={6}>
+                <Item>
+                  <Button type="primary" htmlType="submit">
+                    保存文章
+                  </Button>
+                </Item>
+              </Col>
             </Row>
           </Col>
           <Col span={8}>
@@ -181,13 +192,13 @@ export default function ArticleEdit() {
         </Row>
       </Form>
       <Editor
-        onSave={handleSaveArticle}
+        // onSave={handleSaveArticle}
         subfield={true}
         preview={true}
         value={articleContent}
         onChange={(value) => setArticleContent(value)}
       />
-      <Spin delay={800} size="large" tip="加载中..." spinning={isLoading} />
+      <Spin delay={800} size="large" tip="加载中···" spinning={isLoading} />
     </div>
   );
 }
