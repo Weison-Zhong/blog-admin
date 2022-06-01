@@ -15,6 +15,11 @@ export default class GuestList extends Component {
   componentDidMount() {
     this.fetchGuests();
   }
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
+  }
   handlePageSizeChange = (newPageNum, newPageSize) => {
     pageNumber = newPageNum;
     pageSize = newPageSize;
@@ -91,8 +96,8 @@ export default class GuestList extends Component {
           <Table
             columns={columns}
             dataSource={this.state.guests}
-            rowKey="ip"
-            scroll={{ y: "calc(100vh - 180px)" }}
+            rowKey="index"
+            scroll={{ y: "calc(100vh - 185px)" }}
             pagination={{
               showSizeChanger: true,
               onShowSizeChange: this.handlePageSizeChange,

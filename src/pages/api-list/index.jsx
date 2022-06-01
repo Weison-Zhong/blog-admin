@@ -161,6 +161,10 @@ export default function ApiList() {
   useEffect(() => {
     fetchApis();
     fetchMenus();
+    return () => {
+      setApiList({});
+      setMenuList({});
+    };
   }, []);
 
   return (
@@ -208,7 +212,6 @@ export default function ApiList() {
             showSearch
             optionFilterProp="children"
             filterOption={(input, option) => {
-              console.log({ option });
               const children = option.children.toString();
               if (typeof children === "undefined") {
                 return null;

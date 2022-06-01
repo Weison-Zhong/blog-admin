@@ -3,7 +3,7 @@ import { message, Upload } from "antd";
 import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import "./index.less";
 
-export default function ImgUpload(props) {
+function ImgUpload(props) {
   const { imageUrl, setImageUrl, fileChange } = props;
   const [loading, setLoading] = useState(false);
   const handleUpload = () => {
@@ -62,3 +62,5 @@ function beforeUpload(file) {
   }
   return isJpgOrPng && isLt3M;
 }
+
+export default React.memo(ImgUpload);

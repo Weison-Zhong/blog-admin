@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal } from "antd";
-export default function DeleteModal(props) {
+function DeleteModal(props) {
   const { deletingObj, onDelete, setDeletingObj } = props;
   const { id, title, name } = deletingObj;
   return (
@@ -17,3 +17,5 @@ export default function DeleteModal(props) {
     </Modal>
   );
 }
+
+export default React.memo(DeleteModal);

@@ -1,6 +1,6 @@
 import { Button, Table, message, Form, Input, Select } from "antd";
 import "./index.less";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 import { useSelector } from "react-redux";
@@ -50,6 +50,9 @@ export default function UserList() {
   const [userList, setUserList] = useState([]);
   const [roleList, setRoleList] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
+  const handleImgFileChange = useCallback((originFileObj) => {
+    imgFile = originFileObj;
+  }, []);
   const columns = [
     {
       title: "序号",
@@ -63,7 +66,7 @@ export default function UserList() {
       width: 120,
       align: "center",
       render: (_, row) => {
-        return <img className="avatar" src={row.avatarUrl} alt=""/>;
+        return <img className="avatar" src={row.avatarUrl} alt="" />;
       },
     },
     {
@@ -122,7 +125,6 @@ export default function UserList() {
   const fetchUsers = async () => {
     const res = await getUsersApi();
     const { code, data } = res || {};
-    console.log({ res });
     if (code !== 200) return;
     data.forEach((item, i) => (item.index = i + 1));
     setUserList(data);
@@ -190,6 +192,10 @@ export default function UserList() {
   useEffect(() => {
     fetchUsers();
     fetchRoles();
+    return () => {
+      setUserList({});
+      setRoleList({});
+    };
   }, []);
   return (
     <div className="user-list">
@@ -257,10 +263,7 @@ export default function UserList() {
           <ImgUpload
             imageUrl={imageUrl}
             setImageUrl={setImageUrl}
-            fileChange={(originFileObj) => {
-              imgFile = originFileObj;
-              console.log({ imgFile });
-            }}
+            fileChange={handleImgFileChange}
           />
         </Item>
       </FormModal>

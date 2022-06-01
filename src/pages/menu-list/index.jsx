@@ -117,7 +117,7 @@ export default function MenuList() {
     },
   ];
   const handleAddSecondMenuClick = (row) => {
-    console.log({ row });
+    // console.log({ row });
     setUpdatingMenu({ parentMenuId: row.id });
     setIsShowModal(true);
   };
@@ -158,16 +158,21 @@ export default function MenuList() {
   const fetchMenus = async () => {
     const res = await getMenusApi();
     const { code, data } = res;
-    console.log("menus-->", data);
+    // console.log("menus-->", data);
     if (code !== 200 && !data) return;
     setMenus(data);
   };
   useEffect(() => {
     fetchMenus();
     fetchIcons();
+    return () => {
+      setMenus({});
+      setIcons({});
+    };
+    // https://stackoverflow.com/questions/54954385/react-useeffect-causing-cant-perform-a-react-state-update-on-an-unmounted-comp
   }, []);
   const handleSubmit = async (data) => {
-    console.log({ data });
+    // console.log({ data });
     if (typeof data.keepAlive === "boolean") {
       data.keepAlive = Number(data.keepAlive);
     }

@@ -63,7 +63,6 @@ export default class BlogConfig extends Component {
   };
   fetchBlogConfig = async () => {
     const res = await getBlogConfigApi();
-    console.log({ res });
     const { code, data } = res || {};
     if (code !== 200 || !data) return;
     const { resumeUrl } = data || {};
@@ -74,6 +73,11 @@ export default class BlogConfig extends Component {
   };
   componentDidMount() {
     this.fetchBlogConfig();
+  }
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
   }
   render() {
     const { isSubmitting } = this.state;

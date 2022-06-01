@@ -383,6 +383,9 @@ class SystemStatus extends Component {
     this.initChart2();
   }
   componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
     clearInterval(echartTimer);
     clearInterval(timer);
   }

@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Modal, Form, Button } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 const { Item } = Form;
 
-export default function FormModal(props) {
+function FormModal(props) {
   const formRef = useRef();
   const {
     isShowModal,
@@ -70,3 +70,5 @@ export default function FormModal(props) {
     </Modal>
   );
 }
+
+export default React.memo(FormModal);

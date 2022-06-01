@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import "./index.less";
 import Editor from "for-editor";
 import {
@@ -30,7 +30,6 @@ const { Option } = Select;
 let imgFile = null;
 export default function ArticleEdit() {
   const formRef = React.createRef();
-
   const [articleContent, setArticleContent] = useState("");
   const [articleTypes, setArticleTypes] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
@@ -38,6 +37,9 @@ export default function ArticleEdit() {
   const [newArticleType, setNewArticleType] = useState("");
   const [updatingArticle, setUpdatingArticle] = useState({});
   const history = useHistory();
+  const handleImgFileChange = useCallback((originFileObj) => {
+    imgFile = originFileObj;
+  }, []);
   const fetchArticleTypes = async () => {
     const res = await getArticleTypesApi();
     const { data } = res;
@@ -183,9 +185,7 @@ export default function ArticleEdit() {
               <ImgUpload
                 imageUrl={imageUrl}
                 setImageUrl={setImageUrl}
-                fileChange={(originFileObj) => {
-                  imgFile = originFileObj;
-                }}
+                fileChange={handleImgFileChange}
               />
             </Item>
           </Col>

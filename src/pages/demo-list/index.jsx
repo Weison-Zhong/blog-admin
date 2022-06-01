@@ -133,7 +133,6 @@ export default function DemoList() {
   async function fetchDemos() {
     const res = await getDemosApi();
     const { code, data } = res || {};
-    console.log({ res });
     if (code !== 200) return;
     data.forEach((item, i) => (item.index = i + 1));
     setDemoList(data);
@@ -146,11 +145,9 @@ export default function DemoList() {
   }
   //新增或修改Demo
   const handleSubmit = async (newDemo) => {
-    console.log({ newDemo });
     setIsSubmitting(true);
     try {
       const { id } = updatingDemo || {};
-      console.log({ newDemo });
       newDemo.status = Number(newDemo.status);
       const demoForm = new FormData();
       //遍历antd表单数据插入formdata
@@ -196,6 +193,10 @@ export default function DemoList() {
   useEffect(() => {
     fetchDemos();
     fetchIcons();
+    return () => {
+      setDemoList({});
+      setIcons({});
+    };
   }, []);
 
   return (

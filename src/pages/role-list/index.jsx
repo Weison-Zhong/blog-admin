@@ -141,7 +141,7 @@ export default function RoleList() {
     const res = await getRolesApi();
     const { code, data } = res || {};
     if (code !== 200) return;
-    // console.log("roles res --->", res); 
+    // console.log("roles res --->", res);
     data.forEach((item, i) => (item.index = i + 1));
     setRoleList(data);
   };
@@ -237,6 +237,10 @@ export default function RoleList() {
   useEffect(() => {
     fetchRoles();
     fetchMenus();
+    return () => {
+      setPermissionTreeData({});
+      setRoleList({});
+    };
   }, []);
   return (
     <div className="role-list">

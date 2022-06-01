@@ -100,7 +100,7 @@ function renderRoutes(routes) {
   return nodes;
 }
 
-export default function LayoutPage() {
+function LayoutPage() {
   const history = useHistory();
   const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [collapsed, setCollapsed] = useState(false);
@@ -146,6 +146,22 @@ export default function LayoutPage() {
             <img src={require("../assets/images/logo.png")} alt="" />
           </div>
           <h5>钟伟胜博客后台管理系统</h5>
+          <div className="links">
+            <a
+              href="http://www.weison-zhong.cn:5001/swagger/index.html"
+              target="_blank"
+              rel="noreferrer"
+            >
+              打开Api文档
+            </a>
+            <a
+              href="https://github.com/Weison-Zhong/blog-admin/issues"
+              target="_blank"
+              rel="noreferrer"
+            >
+              有问题欢迎反馈issue
+            </a>
+          </div>
         </div>
         <Dropdown overlay={menu} trigger={["click"]}>
           <div
@@ -230,3 +246,5 @@ export default function LayoutPage() {
     </Layout>
   );
 }
+
+export default React.memo(LayoutPage);

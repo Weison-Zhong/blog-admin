@@ -45,15 +45,19 @@ export default class ArticleList extends Component {
     this.fetchArticleList();
     this.fetchArticleTypes();
   }
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
+  }
   onSortEnd = async (data) => {
     const { articleList, isLoading } = this.state;
     const { oldIndex, newIndex } = data;
     const diff = oldIndex - newIndex;
-    console.log({ diff });
     if (!diff || isLoading) return;
     this.setState({ isLoading: true });
     const matchArticle = articleList[oldIndex];
-    const {  id } = matchArticle || {};
+    const { id } = matchArticle || {};
     // const newData = arrayMoveImmutable(
     //   [].concat(articleList),
     //   oldIndex,

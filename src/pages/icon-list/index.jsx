@@ -90,6 +90,11 @@ export default class IconList extends Component {
   componentDidMount() {
     this.fetchIcons();
   }
+  componentWillUnmount() {
+    this.setState = (state, callback) => {
+      return;
+    };
+  }
   render() {
     const { icons, isShowModal, isSubmitting, updatingIcon } = this.state;
     return (
