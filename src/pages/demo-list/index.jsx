@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   Button,
   Table,
@@ -179,7 +179,7 @@ export default function DemoList() {
     }
   };
   //删除Demo
-  async function handleDeleteDemo() {
+  const handleDeleteDemo = useCallback(async () => {
     const { id } = deletingDemo || {};
     if (!id) return;
     const res = await deleteDemoApi(id);
@@ -188,7 +188,11 @@ export default function DemoList() {
     message.success(msg);
     setDeletingDemo({});
     fetchDemos();
-  }
+  }, [deletingDemo]);
+  const handleModalClose = () => {
+    setUpdatingDemo({});
+    setIsShowModal(false);
+  };
   //初始化
   useEffect(() => {
     fetchDemos();
@@ -215,68 +219,68 @@ export default function DemoList() {
           }}
         />
       </div>
-      <FormModal
-        formConfig={formConfig}
-        title={"Demo"}
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-        isSubmitting={isSubmitting}
-        updatingObj={updatingDemo}
-        setUpdatingObj={setUpdatingDemo}
-        submitBtnCallBack={handleSubmit}
-        initialValues={{
-          menuId: updatingDemo.belongMenu && updatingDemo.belongMenu.menuId,
-          iconIds:
-            updatingDemo.icons && updatingDemo.icons.map((item) => item.id),
-        }}
-      >
-        <Item name="title" label="Demo名" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        <Item name="description" label="描述" rules={[{ required: true }]}>
-          <Input.TextArea allowClear={true} />
-        </Item>
-        <Item name="weight" label="权重" rules={[{ required: true }]}>
-          <InputNumber min={0} />
-        </Item>
-        <Item
-          label="状态"
-          name="status"
-          rules={[{ required: true }]}
-          valuePropName="checked"
-          initialValue={true}
+      {isShowModal && (
+        <FormModal
+          formConfig={formConfig}
+          title="Demo"
+          isSubmitting={isSubmitting}
+          updatingObj={updatingDemo}
+          submitBtnCallBack={handleSubmit}
+          handleModalClose={handleModalClose}
+          initialValues={{
+            menuId: updatingDemo.belongMenu && updatingDemo.belongMenu.menuId,
+            iconIds:
+              updatingDemo.icons && updatingDemo.icons.map((item) => item.id),
+          }}
         >
-          <Switch checkedChildren="上架" unCheckedChildren="隐藏" />
-        </Item>
-        <Item label="Icon图标" name="iconIds" rules={[{ required: true }]}>
-          <Select
-            placeholder="请选择图标墙"
-            mode="multiple"
-            showArrow
-            tagRender={TagRender}
-            style={{ width: "100%" }}
-            showSearch={false}
+          <Item name="title" label="Demo名" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+          <Item name="description" label="描述" rules={[{ required: true }]}>
+            <Input.TextArea allowClear={true} />
+          </Item>
+          <Item name="weight" label="权重" rules={[{ required: true }]}>
+            <InputNumber min={0} />
+          </Item>
+          <Item
+            label="状态"
+            name="status"
+            rules={[{ required: true }]}
+            valuePropName="checked"
+            initialValue={true}
           >
-            {icons.map((item) => (
-              <Option key={item.id}>
-                <li>
-                  <i className={`iconfont ${item.key}`}></i>
-                  <span style={{ marginLeft: "5px" }}>{item.name}</span>
-                </li>
-              </Option>
-            ))}
-          </Select>
-        </Item>
-        <Item label="封面图" className="cover-img-upload">
-          <ImgUpload
-            imageUrl={imageUrl}
-            setImageUrl={setImageUrl}
-            fileChange={(originFileObj) => {
-              imgFile = originFileObj;
-            }}
-          />
-        </Item>
-      </FormModal>
+            <Switch checkedChildren="上架" unCheckedChildren="隐藏" />
+          </Item>
+          <Item label="Icon图标" name="iconIds" rules={[{ required: true }]}>
+            <Select
+              placeholder="请选择图标墙"
+              mode="multiple"
+              showArrow
+              tagRender={TagRender}
+              style={{ width: "100%" }}
+              showSearch={false}
+            >
+              {icons.map((item) => (
+                <Option key={item.id}>
+                  <li>
+                    <i className={`iconfont ${item.key}`}></i>
+                    <span style={{ marginLeft: "5px" }}>{item.name}</span>
+                  </li>
+                </Option>
+              ))}
+            </Select>
+          </Item>
+          <Item label="封面图" className="cover-img-upload">
+            <ImgUpload
+              imageUrl={imageUrl}
+              setImageUrl={setImageUrl}
+              fileChange={(originFileObj) => {
+                imgFile = originFileObj;
+              }}
+            />
+          </Item>
+        </FormModal>
+      )}
       <DeleteModal
         deletingObj={deletingDemo}
         setDeletingObj={setDeletingDemo}

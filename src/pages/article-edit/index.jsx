@@ -28,7 +28,7 @@ import { getUrlParams } from "@/utils/tools";
 const { Item } = Form;
 const { Option } = Select;
 let imgFile = null;
-export default function ArticleEdit() {
+export default function ArticleEdit(props) {
   const formRef = React.createRef();
   const [articleContent, setArticleContent] = useState("");
   const [articleTypes, setArticleTypes] = useState([]);

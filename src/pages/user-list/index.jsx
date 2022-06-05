@@ -179,7 +179,7 @@ export default function UserList() {
     setIsShowModal(false);
     fetchUsers();
   };
-  const handleDeleteRole = async () => {
+  const handleDeleteRole = useCallback(async () => {
     const { id } = deletingUser || {};
     if (!id) return;
     const res = await deleteUserApi(id);
@@ -188,6 +188,10 @@ export default function UserList() {
     message.success(msg);
     setDeletingUser({});
     fetchUsers();
+  }, [deletingUser]);
+  const handleModalClose = () => {
+    setUpdatingUser({});
+    setIsShowModal(false);
   };
   useEffect(() => {
     fetchUsers();
@@ -210,63 +214,65 @@ export default function UserList() {
           scroll={{ y: "calc(100vh - 210px)" }}
         />
       </div>
-      <FormModal
-        formConfig={formConfig}
-        title={"用户"}
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-        isSubmitting={isSubmitting}
-        updatingObj={updatingUser}
-        setUpdatingObj={setUpdatingUser}
-        submitBtnCallBack={handleSubmit}
-        initialValues={{
-          roleId: updatingUser.role && updatingUser.role.roleId,
-        }}
-      >
-        <Item name="name" label="用户名" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        <Item
-          name="password"
-          label="密码"
-          autoComplete="new-password"
-          rules={[{ validator: pwdValidator, required: true }]}
+      {isShowModal && (
+        <FormModal
+          formConfig={formConfig}
+          title="用户"
+          isSubmitting={isSubmitting}
+          updatingObj={updatingUser}
+          submitBtnCallBack={handleSubmit}
+          handleModalClose={handleModalClose}
+          initialValues={{
+            roleId: updatingUser.role && updatingUser.role.roleId,
+          }}
         >
-          <Input.Password allowClear={true} />
-        </Item>
-        <Item
-          name="roleId"
-          label="角色"
-          rules={[{ required: true, message: "请选择角色" }]}
-        >
-          <Select
-            showSearch
-            placeholder="请选择角色"
-            optionFilterProp="children"
-            filterOption={(input, option) => {
-              const children = option.children.toString();
-              if (typeof children === "undefined") {
-                return null;
-              } else {
-                return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-            }}
+          <Item name="name" label="用户名" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+          <Item
+            name="password"
+            label="密码"
+            autoComplete="new-password"
+            rules={[{ validator: pwdValidator, required: true }]}
           >
-            {roleList.map((item) => (
-              <Option value={item.id} key={item.id}>
-                {item.name}
-              </Option>
-            ))}
-          </Select>
-        </Item>
-        <Item label="头像" className="avatar-upload">
-          <ImgUpload
-            imageUrl={imageUrl}
-            setImageUrl={setImageUrl}
-            fileChange={handleImgFileChange}
-          />
-        </Item>
-      </FormModal>
+            <Input.Password allowClear={true} />
+          </Item>
+          <Item
+            name="roleId"
+            label="角色"
+            rules={[{ required: true, message: "请选择角色" }]}
+          >
+            <Select
+              showSearch
+              placeholder="请选择角色"
+              optionFilterProp="children"
+              filterOption={(input, option) => {
+                const children = option.children.toString();
+                if (typeof children === "undefined") {
+                  return null;
+                } else {
+                  return (
+                    children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }
+              }}
+            >
+              {roleList.map((item) => (
+                <Option value={item.id} key={item.id}>
+                  {item.name}
+                </Option>
+              ))}
+            </Select>
+          </Item>
+          <Item label="头像" className="avatar-upload">
+            <ImgUpload
+              imageUrl={imageUrl}
+              setImageUrl={setImageUrl}
+              fileChange={handleImgFileChange}
+            />
+          </Item>
+        </FormModal>
+      )}
       <DeleteModal
         deletingObj={deletingUser}
         setDeletingObj={setDeletingUser}

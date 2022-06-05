@@ -1,6 +1,6 @@
 import { Button, Table, Tree, Drawer, message, Space, Form, Input } from "antd";
 import "./index.less";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import FormModal from "@/components/FormModal";
 import DeleteModal from "@/components/DeleteModal";
 import { UPDATE_MENUS } from "@/redux/actionTypes";
@@ -204,7 +204,7 @@ export default function RoleList() {
     setIsShowModal(false);
     fetchRoles();
   };
-  const handleDeleteRole = async () => {
+  const handleDeleteRole = useCallback(async () => {
     const { id } = deletingRole || {};
     if (!id) return;
     const res = await deleteRoleApi(id);
@@ -213,7 +213,7 @@ export default function RoleList() {
     message.success(msg);
     setDeletingRole({});
     fetchRoles();
-  };
+  }, [deletingRole]);
   //请求菜单列表，从结果中构造出权限树需要的数据结构
   const fetchMenus = async () => {
     const res = await getMenusApi();
@@ -233,6 +233,10 @@ export default function RoleList() {
     // console.log({treeData});
     setPermissionTreeData(treeData);
     flattenPermissions = getFlattenArray(treeData);
+  };
+  const handleModalClose = () => {
+    setUpdatingRole({});
+    setIsShowModal(false);
   };
   useEffect(() => {
     fetchRoles();
@@ -256,20 +260,20 @@ export default function RoleList() {
           pagination={false}
         />
       </div>
-      <FormModal
-        formConfig={formConfig}
-        title={"角色"}
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-        isSubmitting={isSubmitting}
-        updatingObj={updatingRole}
-        setUpdatingObj={setUpdatingRole}
-        submitBtnCallBack={handleSubmit}
-      >
-        <Item name="name" label="角色名" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-      </FormModal>
+      {isShowModal && (
+        <FormModal
+          formConfig={formConfig}
+          title="角色"
+          isSubmitting={isSubmitting}
+          updatingObj={updatingRole}
+          submitBtnCallBack={handleSubmit}
+          handleModalClose={handleModalClose}
+        >
+          <Item name="name" label="角色名" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+        </FormModal>
+      )}
       <DeleteModal
         deletingObj={deletingRole}
         setDeletingObj={setDeletingRole}

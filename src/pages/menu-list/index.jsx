@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   getMenusApi,
   addMenuApi,
@@ -128,7 +128,7 @@ export default function MenuList() {
   const handleDeleteMenuClick = async (row) => {
     setDeletingMenu(row);
   };
-  const handleDeleteMenu = async () => {
+  const handleDeleteMenu = useCallback(async () => {
     const { id } = deletingMenu || {};
     if (!id) return message.error("参数格式错误，操作失败");
     const res = await deleteMenuApi(id);
@@ -138,7 +138,7 @@ export default function MenuList() {
       message.success(msg);
       setDeletingMenu({});
     }
-  };
+  }, [deletingMenu]);
   const updateUserMenusList = async () => {
     const res = await getUserMenusApi();
     const { code, data } = res || {};
@@ -162,15 +162,6 @@ export default function MenuList() {
     if (code !== 200 && !data) return;
     setMenus(data);
   };
-  useEffect(() => {
-    fetchMenus();
-    fetchIcons();
-    return () => {
-      setMenus({});
-      setIcons({});
-    };
-    // https://stackoverflow.com/questions/54954385/react-useeffect-causing-cant-perform-a-react-state-update-on-an-unmounted-comp
-  }, []);
   const handleSubmit = async (data) => {
     // console.log({ data });
     if (typeof data.keepAlive === "boolean") {
@@ -198,6 +189,20 @@ export default function MenuList() {
       setIsShowModal(false);
     }
   };
+  const handleModalClose = () => {
+    setUpdatingMenu({});
+    setIsShowModal(false);
+  };
+  useEffect(() => {
+    fetchMenus();
+    fetchIcons();
+    return () => {
+      setMenus({});
+      setIcons({});
+    };
+    //关于不清除state时控制台保存的文章
+    // https://stackoverflow.com/questions/54954385/react-useeffect-causing-cant-perform-a-react-state-update-on-an-unmounted-comp
+  }, []);
   return (
     <div className="menu-list">
       <Button
@@ -219,76 +224,76 @@ export default function MenuList() {
           showSizeChanger: true,
         }}
       />
-      <FormModal
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-        isSubmitting={isSubmitting}
-        formConfig={formConfig}
-        title={updatingMenu.parentMenuId ? "二级菜单" : "一级菜单"}
-        updatingObj={updatingMenu}
-        setUpdatingObj={setUpdatingMenu}
-        submitBtnCallBack={handleSubmit}
-        initialValues={{
-          weight: 0,
-          iconId: updatingMenu.icon && updatingMenu.icon.id,
-        }}
-      >
-        <Item name="name" label="菜单名" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        <Item name="key" label="路径" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        {updatingMenu.parentMenuId ? (
-          <>
-            <Item
-              name="componentPath"
-              label="组件目录"
-              rules={[{ required: true }]}
+      {isShowModal && (
+        <FormModal
+          isSubmitting={isSubmitting}
+          formConfig={formConfig}
+          title={updatingMenu.parentMenuId ? "二级菜单" : "一级菜单"}
+          updatingObj={updatingMenu}
+          submitBtnCallBack={handleSubmit}
+          handleModalClose={handleModalClose}
+          initialValues={{
+            weight: 0,
+            iconId: updatingMenu.icon && updatingMenu.icon.id,
+          }}
+        >
+          <Item name="name" label="菜单名" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+          <Item name="key" label="路径" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+          {updatingMenu.parentMenuId ? (
+            <>
+              <Item
+                name="componentPath"
+                label="组件目录"
+                rules={[{ required: true }]}
+              >
+                <Input allowClear={true} />
+              </Item>
+              <Item
+                label="是否缓存"
+                name="keepAlive"
+                rules={[{ required: true }]}
+                valuePropName="checked"
+                initialValue={false}
+              >
+                <Switch />
+              </Item>
+            </>
+          ) : null}
+          <Item name="iconId" label="图标" rules={[{ required: true }]}>
+            <Select
+              style={{ width: 220 }}
+              placeholder="请选择图标"
+              // showSearch
+              // optionFilterProp="label"
+              // filterOption={(input, option) => {
+              //   const children = option.children.toString();
+              //   console.log({ option });
+              //   if (typeof children === "undefined") {
+              //     return null;
+              //   } else {
+              //     return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+              //   }
+              // }}
             >
-              <Input allowClear={true} />
-            </Item>
-            <Item
-              label="是否缓存"
-              name="keepAlive"
-              rules={[{ required: true }]}
-              valuePropName="checked"
-              initialValue={false}
-            >
-              <Switch />
-            </Item>
-          </>
-        ) : null}
-        <Item name="iconId" label="图标" rules={[{ required: true }]}>
-          <Select
-            style={{ width: 220 }}
-            placeholder="请选择图标"
-            // showSearch
-            // optionFilterProp="label"
-            // filterOption={(input, option) => {
-            //   const children = option.children.toString();
-            //   console.log({ option });
-            //   if (typeof children === "undefined") {
-            //     return null;
-            //   } else {
-            //     return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-            //   }
-            // }}
-          >
-            {icons.map((item) => (
-              <Option key={item.id}>
-                <li>
-                  <i className={`iconfont ${item.key}`}></i>
-                  <span style={{ marginLeft: "5px" }}>{item.name}</span>
-                </li>
-              </Option>
-            ))}
-          </Select>
-        </Item>
-        <Item name="weight" label="权重" rules={[{ required: true }]}>
-          <InputNumber min={0} />
-        </Item>
-      </FormModal>
+              {icons.map((item) => (
+                <Option key={item.id}>
+                  <li>
+                    <i className={`iconfont ${item.key}`}></i>
+                    <span style={{ marginLeft: "5px" }}>{item.name}</span>
+                  </li>
+                </Option>
+              ))}
+            </Select>
+          </Item>
+          <Item name="weight" label="权重" rules={[{ required: true }]}>
+            <InputNumber min={0} />
+          </Item>
+        </FormModal>
+      )}
       <DeleteModal
         deletingObj={deletingMenu}
         setDeletingObj={setDeletingMenu}

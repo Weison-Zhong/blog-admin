@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Button, Table, Form, Input, message, Select } from "antd";
 import { FormOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
@@ -25,6 +25,7 @@ const formConfig = {
 };
 
 export default function ApiList() {
+  console.log("apilist render");
   const [isShowModal, setIsShowModal] = useState(false);
   const [updatingApi, setUpdatingApi] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,6 +101,16 @@ export default function ApiList() {
       },
     },
   ];
+  const handleDeleteApi = useCallback(async () => {
+    const { id } = deletingApi || {};
+    if (!id) return;
+    const res = await deleteApiApi(id);
+    const { code, msg } = res || {};
+    if (code !== 200) return;
+    message.success(msg);
+    setDeletingApi({});
+    fetchApis();
+  }, [deletingApi]);
   function handleDeleteApiClick(row) {
     setDeletingApi(row);
   }
@@ -141,22 +152,15 @@ export default function ApiList() {
     setIsShowModal(false);
     fetchApis();
   };
-  //删除Api
-  async function handleDeleteApi() {
-    const { id } = deletingApi || {};
-    if (!id) return;
-    const res = await deleteApiApi(id);
-    const { code, msg } = res || {};
-    if (code !== 200) return;
-    message.success(msg);
-    setDeletingApi({});
-    fetchApis();
-  }
   //修改Api按钮
   function handleEditApiClick(row) {
     setUpdatingApi(row);
     setIsShowModal(true);
   }
+  const handleModalClose = () => {
+    setUpdatingApi({});
+    setIsShowModal(false);
+  };
   //初始化
   useEffect(() => {
     fetchApis();
@@ -166,7 +170,6 @@ export default function ApiList() {
       setMenuList({});
     };
   }, []);
-
   return (
     <div className="api-list">
       <div className="content-container">
@@ -183,49 +186,51 @@ export default function ApiList() {
           }}
         />
       </div>
-      <FormModal
-        formConfig={formConfig}
-        title={"Api"}
-        isShowModal={isShowModal}
-        setIsShowModal={setIsShowModal}
-        isSubmitting={isSubmitting}
-        updatingObj={updatingApi}
-        setUpdatingObj={setUpdatingApi}
-        submitBtnCallBack={handleSubmit}
-        initialValues={{
-          menuId: updatingApi.belongMenu && updatingApi.belongMenu.menuId,
-        }}
-      >
-        <Item name="title" label="Api名" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        <Item name="key" label="路径" rules={[{ required: true }]}>
-          <Input allowClear={true} />
-        </Item>
-        <Item name="description" label="说明" rules={[{ required: false }]}>
-          <Input.TextArea allowClear={true} />
-        </Item>
-        <Item name="menuId" label="所属菜单" rules={[{ required: false }]}>
-          <Select
-            style={{ width: 220 }}
-            placeholder="请选择所属菜单"
-            showSearch
-            optionFilterProp="children"
-            filterOption={(input, option) => {
-              const children = option.children.toString();
-              if (typeof children === "undefined") {
-                return null;
-              } else {
-                return children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-              }
-            }}
-          >
-            {menuList.map((item) => (
-              <Option key={item.id}>{item.name}</Option>
-            ))}
-          </Select>
-        </Item>
-      </FormModal>
+      {isShowModal && (
+        <FormModal
+          formConfig={formConfig}
+          title="Api"
+          isSubmitting={isSubmitting}
+          updatingObj={updatingApi}
+          submitBtnCallBack={handleSubmit}
+          handleModalClose={handleModalClose}
+          initialValues={{
+            menuId: updatingApi.belongMenu && updatingApi.belongMenu.menuId,
+          }}
+        >
+          <Item name="title" label="Api名" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+          <Item name="key" label="路径" rules={[{ required: true }]}>
+            <Input allowClear={true} />
+          </Item>
+          <Item name="description" label="说明" rules={[{ required: false }]}>
+            <Input.TextArea allowClear={true} />
+          </Item>
+          <Item name="menuId" label="所属菜单" rules={[{ required: false }]}>
+            <Select
+              style={{ width: 220 }}
+              placeholder="请选择所属菜单"
+              showSearch
+              optionFilterProp="children"
+              filterOption={(input, option) => {
+                const children = option.children.toString();
+                if (typeof children === "undefined") {
+                  return null;
+                } else {
+                  return (
+                    children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }
+              }}
+            >
+              {menuList.map((item) => (
+                <Option key={item.id}>{item.name}</Option>
+              ))}
+            </Select>
+          </Item>
+        </FormModal>
+      )}
       <DeleteModal
         deletingObj={deletingApi}
         setDeletingObj={setDeletingApi}

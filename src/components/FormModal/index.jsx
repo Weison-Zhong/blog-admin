@@ -4,24 +4,19 @@ import { LoadingOutlined } from "@ant-design/icons";
 const { Item } = Form;
 
 function FormModal(props) {
+  console.log("FormModal render");
   const formRef = useRef();
   const {
-    isShowModal,
-    setIsShowModal,
     isSubmitting,
     updatingObj,
-    setUpdatingObj,
     title,
     submitBtnCallBack,
     initialValues,
     formConfig,
     children,
+    handleModalClose,
   } = props;
   const { width, layout, tailLayout } = formConfig || {};
-  const handleModalClose = () => {
-    setUpdatingObj({});
-    resetFormData();
-  };
   const resetFormData = () => formRef.current && formRef.current.resetFields();
   useEffect(() => {
     setTimeout(() => {
@@ -31,13 +26,9 @@ function FormModal(props) {
   return (
     <Modal
       title={(updatingObj.id ? "修改" : "新增") + title}
-      visible={isShowModal}
+      visible={true}
       footer={null}
-      destroyOnClose={true} //可防止Form的initialValues动态更新时延迟问题（读取到的是上次state）
-      afterClose={handleModalClose}
-      onCancel={() => {
-        setIsShowModal(false);
-      }}
+      onCancel={handleModalClose}
       width={width}
     >
       <Form

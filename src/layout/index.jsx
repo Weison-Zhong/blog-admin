@@ -100,7 +100,7 @@ function renderRoutes(routes) {
   return nodes;
 }
 
-function LayoutPage() {
+export default function LayoutPage() {
   const history = useHistory();
   const userInfo = useSelector((state) => state.global.userInfo) || {};
   const [collapsed, setCollapsed] = useState(false);
@@ -246,5 +246,3 @@ function LayoutPage() {
     </Layout>
   );
 }
-
-export default React.memo(LayoutPage);
