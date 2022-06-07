@@ -162,6 +162,7 @@ export default function UserList() {
       //如果是修改当前登录用户的帐号信息，需跳转重新登录
       const { id: currentUserId } = userInfo;
       if (res.code === 200 && id === currentUserId) {
+        imgFile = null;
         message.success("修改当前登录用户信息成功，请重新登录");
         setTimeout(() => {
           history.push("/login");
@@ -175,6 +176,7 @@ export default function UserList() {
     setIsSubmitting(false);
     const { code, msg } = res || {};
     if (code !== 200) return;
+    imgFile = null;
     message.success(msg);
     setIsShowModal(false);
     fetchUsers();

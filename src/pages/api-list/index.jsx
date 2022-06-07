@@ -25,7 +25,6 @@ const formConfig = {
 };
 
 export default function ApiList() {
-  console.log("apilist render");
   const [isShowModal, setIsShowModal] = useState(false);
   const [updatingApi, setUpdatingApi] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);

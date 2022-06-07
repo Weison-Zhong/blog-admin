@@ -4,7 +4,6 @@ import { LoadingOutlined } from "@ant-design/icons";
 const { Item } = Form;
 
 function FormModal(props) {
-  console.log("FormModal render");
   const formRef = useRef();
   const {
     isSubmitting,

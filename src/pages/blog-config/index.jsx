@@ -1,8 +1,16 @@
 import React, { Component } from "react";
 import "./index.less";
 import { UploadOutlined } from "@ant-design/icons";
-import { Button, message, Form, Input, Upload, notification } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import {
+  Button,
+  message,
+  Form,
+  Input,
+  Upload,
+  notification,
+  Popconfirm,
+} from "antd";
+import { LoadingOutlined, DeleteOutlined } from "@ant-design/icons";
 import {
   getBlogConfigApi,
   updateBlogConfigApi,
@@ -121,13 +129,21 @@ export default class BlogConfig extends Component {
             >
               <Button icon={<UploadOutlined />}>上传简历</Button>
             </Upload>
-            <Button
-              type="danger"
-              style={{ margin: "0 15px" }}
-              onClick={this.handleDeleteResume}
+
+            <Popconfirm
+              title="确定要删除简历吗?"
+              onConfirm={this.handleDeleteResume}
+              okText="确定"
+              cancelText="取消"
             >
-              删除简历
-            </Button>
+              <Button
+                icon={<DeleteOutlined />}
+                type="danger"
+                style={{ margin: "0 15px" }}
+              >
+                删除简历
+              </Button>
+            </Popconfirm>
             <Button
               type="primary"
               htmlType="submit"
@@ -166,5 +182,5 @@ function setPdfUrl(url) {
   if (typeof url !== "string") return message.error("简历文件路径有误，请检查");
   const pdfContainer = document.getElementById("pdf-container");
   if (typeof pdfContainer !== "object") return;
-  pdfContainer.setAttribute("src", url);
+  pdfContainer && pdfContainer.setAttribute("src", url);
 }

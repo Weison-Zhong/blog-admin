@@ -110,7 +110,7 @@ export default class IconList extends Component {
             {icons.map((item, i) => {
               const { name, key } = item;
               return (
-                <li key={i}>
+                <li key={i + "iconKey"}>
                   {key.includes("icon") ? (
                     <>
                       <i className={`iconfont ${key}`}></i>

@@ -89,6 +89,7 @@ export default function ArticleEdit(props) {
       setIsLoading(false);
       const { code, msg } = res;
       if (code !== 200) return;
+      imgFile = null;
       if (!id) {
         message.success("新增文章成功，正前往列表页");
         setTimeout(() => {
@@ -109,6 +110,13 @@ export default function ArticleEdit(props) {
     fetchArticleTypes();
     const { articleId } = getUrlParams() || {};
     articleId && fetchArticleDetail(articleId);
+    return () => {
+      setArticleTypes({});
+      setUpdatingArticle({});
+      setArticleContent({});
+      setImageUrl({});
+      setIsLoading({});
+    };
   }, []);
   useEffect(() => {
     formRef.current && formRef.current.setFieldsValue(updatingArticle);

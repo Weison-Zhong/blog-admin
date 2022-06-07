@@ -46,6 +46,9 @@ export default function DemoList() {
   const [demoList, setDemoList] = useState([]);
   const [icons, setIcons] = useState([]);
   const [imageUrl, setImageUrl] = useState("");
+  const handleImgFileChange = useCallback((originFileObj) => {
+    imgFile = originFileObj;
+  }, []);
   const columns = [
     {
       title: "序号",
@@ -169,6 +172,7 @@ export default function DemoList() {
       setIsSubmitting(false);
       const { code, msg } = res;
       if (code !== 200) return;
+      imgFile = null;
       fetchDemos();
       setIsShowModal(false);
       message.success(msg);
@@ -239,6 +243,13 @@ export default function DemoList() {
           <Item name="description" label="描述" rules={[{ required: true }]}>
             <Input.TextArea allowClear={true} />
           </Item>
+          <Item
+            name="relatedLink"
+            label="github链接"
+            rules={[{ required: true }]}
+          >
+            <Input allowClear={true} />
+          </Item>
           <Item name="weight" label="权重" rules={[{ required: true }]}>
             <InputNumber min={0} />
           </Item>
@@ -260,23 +271,31 @@ export default function DemoList() {
               style={{ width: "100%" }}
               showSearch={false}
             >
-              {icons.map((item) => (
-                <Option key={item.id}>
-                  <li>
-                    <i className={`iconfont ${item.key}`}></i>
-                    <span style={{ marginLeft: "5px" }}>{item.name}</span>
-                  </li>
-                </Option>
-              ))}
+              {icons.map((item) => {
+                const { name, key } = item;
+                return (
+                  <Option key={item.id}>
+                    {key.includes("icon") ? (
+                      <li>
+                        <i className={`iconfont ${item.key}`}></i>
+                        <span style={{ marginLeft: "5px" }}>{item.name}</span>
+                      </li>
+                    ) : (
+                      <li className="demo-icon-png">
+                        <img src={key} alt="" />
+                        <span>{name}</span>
+                      </li>
+                    )}
+                  </Option>
+                );
+              })}
             </Select>
           </Item>
           <Item label="封面图" className="cover-img-upload">
             <ImgUpload
               imageUrl={imageUrl}
               setImageUrl={setImageUrl}
-              fileChange={(originFileObj) => {
-                imgFile = originFileObj;
-              }}
+              fileChange={handleImgFileChange}
             />
           </Item>
         </FormModal>
