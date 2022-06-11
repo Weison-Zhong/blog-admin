@@ -129,7 +129,7 @@ export default function ArticleEdit(props) {
             <Item name="title" label="标题" rules={[{ required: true }]}>
               <Input allowClear={true} />
             </Item>
-            <Item name="relatedLink" label="链接" rules={[{ required: true }]}>
+            <Item name="relatedLink" label="链接" rules={[{ required: false }]}>
               <Input allowClear={true} />
             </Item>
             <Row gutter={2}>
