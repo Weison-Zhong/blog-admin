@@ -323,3 +323,10 @@ export async function getGuestStatisticsApi() {
     method: "get",
   });
 }
+//仅在8081端口开放环境下注册用户信息(正式的是在blog-web端注册)
+export async function guestConfigApi() {
+  return request({
+    url: "/api/GuestConfig",
+    method: "get",
+  });
+}
