@@ -80,9 +80,9 @@ class SystemStatus extends Component {
     const year = now.getFullYear();
     const month = now.getMonth() + 1;
     const date = now.getDate();
-    const hour = now.getHours();
-    const minute = now.getMinutes();
     const week = weeks[day];
+    let hour = now.getHours();
+    let minute = now.getMinutes();
     let welcomeStr = "";
     if (hour < 3) {
       welcomeStr = "深夜了,早点休息了哈";
@@ -100,6 +100,12 @@ class SystemStatus extends Component {
       welcomeStr = "傍晚啦";
     } else {
       welcomeStr = "晚上好";
+    }
+    if (hour < 10) {
+      hour = `0${hour}`;
+    }
+    if (minute < 10) {
+      minute = `0${minute}`;
     }
     const formatText = `${welcomeStr},现在是${year}年${month}月${date}日 ${hour}:${minute} ${week}`;
     this.setState({ timeStr: formatText });

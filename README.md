@@ -11,7 +11,8 @@
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/008ef72510f94eedaa3a671685cb9ec3~tplv-k3u1fbpfcp-watermark.image?)
 * 权限修改
 ![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/54a06322549349aa865f8266b07d9d41~tplv-k3u1fbpfcp-watermark.image?)
-
+* 使用自己封装的滑动验证组件做简单的人机验证,组件已发布到npm ➡️ [weison-react-uilib](https://www.npmjs.com/package/weison-react-uilib)
+![image.png](https://p1-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0e6be2bc1ca84fae8f221518716187d6~tplv-k3u1fbpfcp-watermark.image?)
 #### 7 最后
 * Demo比较简单，可供初学的小伙伴们参考借鉴；
 * 后续计划加上多页签Tag切换，结合后台API完善操作日志记录等功能;

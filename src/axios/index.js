@@ -25,7 +25,7 @@ http.interceptors.response.use(
     if (code === 200) {
       return data;
     }
-    message.error(msg);
+    message.error(msg,5);
   },
   (err) => {
     const { message: msg, response } = err;
@@ -35,7 +35,7 @@ http.interceptors.response.use(
       message.error(msg);
       return err;
     }
-    //服务器有响应，但返回状态码非2开头
+    //服务器有响应，但status非2开头
     const { status, data, statusText } = err.response;
     console.log("接口报错 err.response.data--->", data);
     switch (status) {

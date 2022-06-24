@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from "react";
-import loadable from "@loadable/component";
+import Loadable from "react-loadable";
 import { isArray } from "@/utils/is";
 import { Switch, Route, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -8,6 +8,7 @@ import KeepAlive, { AliveScope } from "react-activation";
 import { Layout } from "antd";
 import NavBar from "@/components/NavBar";
 import Header from "@/components/Header";
+import { Loading } from "weison-react-uilib";
 const { Content } = Layout;
 
 function getFlattenRoutes(routes) {
@@ -15,9 +16,11 @@ function getFlattenRoutes(routes) {
   function travel(_routes) {
     _routes.forEach((route) => {
       if (route.componentPath) {
-        route.component = loadable(() =>
-          import(`../pages/${route.componentPath}`)
-        );
+        route.component = Loadable({
+          loader: () => import(`../pages/${route.componentPath}`),
+          loading: Loading,
+          delay: 300,
+        });
         res.push(route);
       }
       if (isArray(route.children) && route.children.length) {

@@ -7,3 +7,5 @@ export function isObject(val) {
 export function isString(val) {
   return Object.prototype.toString.call(val) === "[object String]";
 }
+
+export const isFormal = window.location.port === "8080";

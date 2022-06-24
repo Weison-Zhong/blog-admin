@@ -14,6 +14,8 @@ import rootReducer from "./redux";
 import PrivateRoute from "./router/PrivateRoute";
 import { getBlogConfigApi, guestConfigApi } from "@/axios/api";
 import { loadCSS } from "@/utils/tools";
+import { isFormal } from "@/utils/is";
+import "weison-react-uilib/lib/index.css";
 const store = createStore(rootReducer);
 const fetchBlogConfig = async () => {
   const res = await getBlogConfigApi();
@@ -25,8 +27,8 @@ const fetchBlogConfig = async () => {
 function App() {
   useEffect(() => {
     fetchBlogConfig();
-    //因为8081开放版本没有对应博客主页，故在此触发用于统计访客数据
-    if (window.location.port === "8081") {
+    //公开版本没有对应博客主页，故在此触发用于统计访客数据
+    if (!isFormal) {
       guestConfigApi();
     }
   }, []);
