@@ -215,7 +215,7 @@ class SystemStatus extends Component {
       title: [
         {
           //eslint-disable-next-line no-useless-concat
-          text: "{name|" + "总人数" + "}\n{val|" + totalGuestCount + "}",
+          text: "{name|" + "访客总数" + "}\n{val|" + totalGuestCount + "}",
           top: "center",
           left: "center",
           textStyle: {
@@ -361,11 +361,12 @@ class SystemStatus extends Component {
     this.initChart1();
     chart2Data = [];
     guestCityList.sort((a, b) => b.count - a.count);
-    const others = guestCityList.splice(5);
+    const others = guestCityList.splice(6);
     guestCityList.forEach((item) => {
       const { city, count } = item || {};
+      if (!city) return; //接口返回太多查询ip地址失败的先不展示,后续考虑切换查询方式
       chart2Data.push({
-        name: city || "未知城市",
+        name: city,
         value: count || 0,
       });
     });
@@ -381,7 +382,7 @@ class SystemStatus extends Component {
     this.initChart2();
   };
   componentDidMount() {
-    setInterval(() => {
+    timer = setInterval(() => {
       this.getNowStr();
     }, 1000);
     this.fetchData();
@@ -392,8 +393,8 @@ class SystemStatus extends Component {
     this.setState = (state, callback) => {
       return;
     };
-    clearInterval(echartTimer);
-    clearInterval(timer);
+    echartTimer && clearInterval(echartTimer);
+    timer && clearInterval(timer);
   }
   render() {
     const { todayAccssCount, totalAccessCount } = this.state.guestData;
