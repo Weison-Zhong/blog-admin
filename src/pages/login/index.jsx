@@ -74,7 +74,7 @@ export default function Login() {
     } else {
       return {
         username: "admin",
-        password: "123456",
+        password: "",
       };
     }
   };
@@ -86,19 +86,6 @@ export default function Login() {
       <div className="right">
         <div className="content">
           <h5>欢迎使用后台管理系统</h5>
-          <a
-            href={
-              isFormal
-                ? "http://www.weison-zhong.cn:8081"
-                : "https://github.com/Weison-Zhong/blog-admin"
-            }
-            target="_blank"
-            rel="noreferrer"
-          >
-            {isFormal
-              ? "访客帐号:admin 密码:123456 (仅有查看权限) 或点击前往公开测试版本"
-              : "当前访问的是公开测试版本，可随意增删改 帐号:admin 密码:123456"}
-          </a>
           <Form
             className="form"
             initialValues={fillFormInitialValues()}
